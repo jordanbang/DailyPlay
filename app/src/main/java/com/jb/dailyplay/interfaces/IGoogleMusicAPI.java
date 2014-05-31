@@ -10,13 +10,13 @@
  ******************************************************************************/
 package com.jb.dailyplay.interfaces;
 
-import gmusic.api.impl.InvalidCredentialsException;
-import gmusic.api.model.AddPlaylist;
-import gmusic.api.model.DeletePlaylist;
-import gmusic.api.model.Playlist;
-import gmusic.api.model.Playlists;
-import gmusic.api.model.QueryResponse;
-import gmusic.api.model.Song;
+import com.jb.dailyplay.impl.InvalidCredentialsException;
+import com.jb.dailyplay.model.AddPlaylist;
+import com.jb.dailyplay.model.DeletePlaylist;
+import com.jb.dailyplay.model.Playlist;
+import com.jb.dailyplay.model.Playlists;
+import com.jb.dailyplay.model.QueryResponse;
+import com.jb.dailyplay.model.Song;
 
 import java.io.File;
 import java.io.IOException;
@@ -24,8 +24,6 @@ import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.Collection;
-
-import javax.naming.directory.InvalidAttributesException;
 
 /**
  * http://readthedocs.org/docs/unofficial-google-music-api/en/latest/
@@ -64,10 +62,10 @@ public interface IGoogleMusicAPI
 
     Collection<File> downloadSongs(Collection<Song> songs)
             throws MalformedURLException, IOException, URISyntaxException,
-            InvalidAttributesException;
+            IllegalArgumentException;
 
     File downloadSong(Song song) throws MalformedURLException, IOException,
-            URISyntaxException, InvalidAttributesException;
+            URISyntaxException, IllegalArgumentException;
 
     QueryResponse search(String query) throws Exception;
 

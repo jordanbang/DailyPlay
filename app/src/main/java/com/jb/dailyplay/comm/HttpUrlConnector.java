@@ -8,9 +8,9 @@
  * Contributors:
  *     Jens Kristian Villadsen - initial API and implementation
  ******************************************************************************/
-package comm;
+package com.jb.dailyplay.comm;
 
-import gmusic.api.interfaces.IGoogleHttpClient;
+import com.google.common.base.Strings;
 
 import java.io.IOException;
 import java.net.CookieHandler;
@@ -21,7 +21,7 @@ import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URISyntaxException;
 
-import com.google.common.base.Strings;
+import com.jb.dailyplay.interfaces.IGoogleHttpClient;
 
 public class HttpUrlConnector implements IGoogleHttpClient
 {

@@ -15,13 +15,13 @@ import com.jb.dailyplay.skyjam.model.Playlists;
 import com.jb.dailyplay.skyjam.model.Track;
 import com.jb.dailyplay.skyjam.model.TrackFeed;
 
+import org.apache.http.client.ClientProtocolException;
+
 import java.io.File;
 import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.Collection;
-
-import org.apache.http.client.ClientProtocolException;
 
 public interface IGoogleSkyJam extends IGoogleMusicAPI
 {

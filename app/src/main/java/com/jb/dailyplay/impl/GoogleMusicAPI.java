@@ -10,20 +10,27 @@
  ******************************************************************************/
 package com.jb.dailyplay.impl;
 
-import gmusic.api.comm.FormBuilder;
-import gmusic.api.comm.HttpUrlConnector;
-import gmusic.api.comm.JSON;
-import gmusic.api.interfaces.IGoogleHttpClient;
-import gmusic.api.interfaces.IGoogleMusicAPI;
-import gmusic.api.interfaces.IJsonDeserializer;
-import gmusic.api.model.AddPlaylist;
-import gmusic.api.model.DeletePlaylist;
-import gmusic.api.model.Playlist;
-import gmusic.api.model.Playlists;
-import gmusic.api.model.QueryResponse;
-import gmusic.api.model.Song;
-import gmusic.api.model.SongUrl;
-import gmusic.model.Tune;
+import com.google.common.base.Strings;
+import com.google.common.io.Files;
+import com.google.common.io.Resources;
+import com.google.gson.Gson;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonParser;
+import com.jb.dailyplay.comm.FormBuilder;
+import com.jb.dailyplay.comm.JSON;
+import com.jb.dailyplay.interfaces.IGoogleHttpClient;
+import com.jb.dailyplay.interfaces.IGoogleMusicAPI;
+import com.jb.dailyplay.interfaces.IJsonDeserializer;
+import com.jb.dailyplay.model.AddPlaylist;
+import com.jb.dailyplay.model.DeletePlaylist;
+import com.jb.dailyplay.model.Playlist;
+import com.jb.dailyplay.model.Playlists;
+import com.jb.dailyplay.model.QueryResponse;
+import com.jb.dailyplay.model.Song;
+import com.jb.dailyplay.model.SongUrl;
+import com.jb.dailyplay.model.Tune;
+import com.jb.dailyplay.comm.HttpUrlConnector;
 
 import java.io.File;
 import java.io.IOException;
@@ -38,14 +45,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-
-import com.google.common.base.Strings;
-import com.google.common.io.Files;
-import com.google.common.io.Resources;
-import com.google.gson.Gson;
-import com.google.gson.JsonArray;
-import com.google.gson.JsonElement;
-import com.google.gson.JsonParser;
 
 public class GoogleMusicAPI implements IGoogleMusicAPI
 {
@@ -320,11 +319,9 @@ public class GoogleMusicAPI implements IGoogleMusicAPI
         return deserializer.deserialize(response, QueryResponse.class);
     }
 
-    protected File downloadTune(final Tune song) throws MalformedURLException,
-            IOException, URISyntaxException
-    {
-        final File file = new File(storageDirectory.getAbsolutePath()
-                + System.getProperty("path.separator") + song.getId() + ".mp3");
+    protected File downloadTune(final Tune song) throws MalformedURLException, IOException, URISyntaxException {
+        final File file = new File(storageDirectory.getAbsolutePath() + System.getProperty("path.separator") + song.getId() + ".mp3");
+//        final File file = new File(context.getFilesDir(), song.getId() + ".mp3");
         if (!file.exists())
         {
             Files.write(Resources.toByteArray(getTuneURL(song).toURL()), file);

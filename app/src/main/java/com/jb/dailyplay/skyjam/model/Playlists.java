@@ -8,7 +8,7 @@
  * Contributors:
  *     Jens Kristian Villadsen - initial API and implementation
  ******************************************************************************/
-package gmusic.api.skyjam.model;
+package com.jb.dailyplay.skyjam.model;
 
 public class Playlists
 {

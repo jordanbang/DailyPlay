@@ -10,12 +10,12 @@
  ******************************************************************************/
 package com.jb.dailyplay.impl;
 
-import gmusic.api.interfaces.IGoogleHttpClient;
-import gmusic.api.interfaces.IJsonDeserializer;
-import gmusic.api.skyjam.interfaces.IGoogleSkyJam;
-import gmusic.api.skyjam.model.Playlists;
-import gmusic.api.skyjam.model.Track;
-import gmusic.api.skyjam.model.TrackFeed;
+import com.jb.dailyplay.interfaces.IGoogleHttpClient;
+import com.jb.dailyplay.interfaces.IJsonDeserializer;
+import com.jb.dailyplay.skyjam.interfaces.IGoogleSkyJam;
+import com.jb.dailyplay.skyjam.model.Playlists;
+import com.jb.dailyplay.skyjam.model.Track;
+import com.jb.dailyplay.skyjam.model.TrackFeed;
 
 import java.io.File;
 import java.io.IOException;

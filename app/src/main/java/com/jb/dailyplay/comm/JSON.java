@@ -8,11 +8,11 @@
  * Contributors:
  *     Jens Kristian Villadsen - initial API and implementation
  ******************************************************************************/
-package comm;
-
-import gmusic.api.interfaces.IJsonDeserializer;
+package com.jb.dailyplay.comm;
 
 import com.google.gson.Gson;
+
+import com.jb.dailyplay.interfaces.IJsonDeserializer;
 
 public class JSON implements IJsonDeserializer
 {

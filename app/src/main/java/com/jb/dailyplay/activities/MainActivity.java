@@ -6,6 +6,11 @@ import android.view.Menu;
 import android.view.MenuItem;
 
 import com.jb.dailyplay.R;
+import com.jb.dailyplay.impl.GoogleMusicAPI;
+import com.jb.dailyplay.model.Song;
+
+import java.io.File;
+import java.util.Collection;
 
 
 public class MainActivity extends Activity {
@@ -14,6 +19,7 @@ public class MainActivity extends Activity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        music();
     }
 
 
@@ -34,5 +40,27 @@ public class MainActivity extends Activity {
             return true;
         }
         return super.onOptionsItemSelected(item);
+    }
+
+    public void music() {
+        Thread thread = new Thread(new Runnable() {
+            @Override
+            public void run() {
+                String password = "***REMOVED***";
+                String username = "george.doe231@gmail.com";
+                GoogleMusicAPI api = new GoogleMusicAPI();
+                try {
+                    api.login(username, password);
+//                    Collection<Song> songs = api.getAllSongs();
+
+                    Song song = new Song();
+                    song.setId("172db441-7711-360b-8faa-cc2e88dfb965");
+                    File file = api.downloadSong(song);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
+        });
+        thread.start();
     }
 }

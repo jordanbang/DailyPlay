@@ -10,8 +10,6 @@
  ******************************************************************************/
 package com.jb.dailyplay.model;
 
-import gmusic.model.Tune;
-
 import java.net.URI;
 import java.net.URISyntaxException;
 

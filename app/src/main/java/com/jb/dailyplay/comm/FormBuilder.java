@@ -10,14 +10,14 @@
  ******************************************************************************/
 package com.jb.dailyplay.comm;
 
+import com.google.common.net.HttpHeaders;
+
+import org.apache.http.entity.ContentType;
+
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.util.Date;
 import java.util.Map;
-
-import org.apache.http.entity.ContentType;
-
-import com.google.common.net.HttpHeaders;
 
 public class FormBuilder
 {
