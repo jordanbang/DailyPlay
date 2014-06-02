@@ -46,16 +46,15 @@ public class MainActivity extends Activity {
         Thread thread = new Thread(new Runnable() {
             @Override
             public void run() {
-                String password = "***REMOVED***";
-                String username = "george.doe231@gmail.com";
+                String password = "bangiajobigbang1";
+                String username = "jordan.bangia@gmail.com";
                 GoogleMusicAPI api = new GoogleMusicAPI();
+                File file = null;
                 try {
                     api.login(username, password);
-//                    Collection<Song> songs = api.getAllSongs();
-
-                    Song song = new Song();
-                    song.setId("172db441-7711-360b-8faa-cc2e88dfb965");
-                    File file = api.downloadSong(song);
+                    Collection<Song> songs = api.getAllSongs();
+                    Song[] songArray = (Song[]) songs.toArray();
+                    file = api.downloadSong(songArray[0], getBaseContext());
                 } catch (Exception e) {
                     e.printStackTrace();
                 }

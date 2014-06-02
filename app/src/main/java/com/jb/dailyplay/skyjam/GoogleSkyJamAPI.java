@@ -8,8 +8,11 @@
  * Contributors:
  *     Jens Kristian Villadsen - initial API and implementation
  ******************************************************************************/
-package com.jb.dailyplay.impl;
+package com.jb.dailyplay.skyjam;
 
+import android.content.Context;
+
+import com.jb.dailyplay.impl.GoogleMusicAPI;
 import com.jb.dailyplay.interfaces.IGoogleHttpClient;
 import com.jb.dailyplay.interfaces.IJsonDeserializer;
 import com.jb.dailyplay.skyjam.interfaces.IGoogleSkyJam;
@@ -26,78 +29,70 @@ import java.util.Collection;
 
 import com.google.common.base.Strings;
 
-public class GoogleSkyJamAPI extends GoogleMusicAPI implements IGoogleSkyJam
-{
-    public GoogleSkyJamAPI()
-    {
+public class GoogleSkyJamAPI extends GoogleMusicAPI implements IGoogleSkyJam {
+    public GoogleSkyJamAPI() {
         super();
     }
 
     public GoogleSkyJamAPI(
-        final IGoogleHttpClient httpClient,
-        final IJsonDeserializer deserializer,
-        final File file)
-    {
+            final IGoogleHttpClient httpClient,
+            final IJsonDeserializer deserializer,
+            final File file) {
         super(httpClient, deserializer, file);
     }
 
     @Override
     public Collection<Track> getAllTracks() throws IOException,
-            URISyntaxException
-    {
+            URISyntaxException {
         final Collection<Track> chunkedCollection = new ArrayList<Track>();
         final TrackFeed chunk = deserializer.deserialize(
                 client.dispatchGet(new URI(
                         HTTPS_WWW_GOOGLEAPIS_COM_SJ_V1BETA1_TRACKS)),
-                TrackFeed.class);
+                TrackFeed.class
+        );
         chunkedCollection.addAll(chunk.getData().getItems());
         chunkedCollection.addAll(getTracks(chunk.getNextPageToken()));
         return chunkedCollection;
     }
 
     private final Collection<Track> getTracks(final String continuationToken)
-            throws IOException, URISyntaxException
-    {
+            throws IOException, URISyntaxException {
         final Collection<Track> chunkedCollection = new ArrayList<Track>();
 
         final TrackFeed chunk = deserializer.deserialize(
                 client.dispatchPost(new URI(
-                        HTTPS_WWW_GOOGLEAPIS_COM_SJ_V1BETA1_TRACKFEED),
-                        "{\"start-token\":\"" + continuationToken + "\"}"),
-                TrackFeed.class);
+                                HTTPS_WWW_GOOGLEAPIS_COM_SJ_V1BETA1_TRACKFEED),
+                        "{\"start-token\":\"" + continuationToken + "\"}"
+                ),
+                TrackFeed.class
+        );
         chunkedCollection.addAll(chunk.getData().getItems());
 
-        if (!Strings.isNullOrEmpty(chunk.getNextPageToken()))
-        {
+        if (!Strings.isNullOrEmpty(chunk.getNextPageToken())) {
             chunkedCollection.addAll(getTracks(chunk.getNextPageToken()));
         }
         return chunkedCollection;
     }
 
     @Override
-    public Collection<File> downloadTracks(final Collection<Track> tracks)
-            throws URISyntaxException, IOException
-    {
+    public Collection<File> downloadTracks(final Collection<Track> tracks, final Context context)
+            throws URISyntaxException, IOException {
         final Collection<File> files = new ArrayList<File>();
-        for (final Track track : tracks)
-        {
-            files.add(downloadTrack(track));
+        for (final Track track : tracks) {
+            files.add(downloadTrack(track, context));
         }
         return files;
     }
 
     @Override
     public URI getTrackURL(final Track track) throws URISyntaxException,
-            IOException
-    {
+            IOException {
         return getTuneURL(track);
     }
 
     @Override
-    public File downloadTrack(final Track track) throws URISyntaxException,
-            IOException
-    {
-        return downloadTune(track);
+    public File downloadTrack(final Track track, final Context context) throws URISyntaxException, IOException {
+        return downloadTune(track, context);
         /*
          * File file = new File(storageDirectory.getAbsolutePath() +
          * track.getId() + ".mp3"); if(!file.exists()) { ByteBuffer buffer =
@@ -121,16 +116,14 @@ public class GoogleSkyJamAPI extends GoogleMusicAPI implements IGoogleSkyJam
 
     @Override
     public Playlists getAllSkyJamPlaylists() throws IOException,
-            URISyntaxException
-    {
+            URISyntaxException {
         // TODO Auto-generated method stub
         return null;
     }
 
     @Override
     public TrackFeed getSkyJamPlaylist(final String plID) throws IOException,
-            URISyntaxException
-    {
+            URISyntaxException {
         // TODO Auto-generated method stub
         return null;
     }

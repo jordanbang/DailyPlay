@@ -10,6 +10,8 @@
  ******************************************************************************/
 package com.jb.dailyplay.interfaces;
 
+import android.content.Context;
+
 import com.jb.dailyplay.impl.InvalidCredentialsException;
 import com.jb.dailyplay.model.AddPlaylist;
 import com.jb.dailyplay.model.DeletePlaylist;
@@ -45,8 +47,7 @@ public interface IGoogleMusicAPI
     final String HTTPS_PLAY_GOOGLE_COM_MUSIC_SERVICES_ADDPLAYLIST = "https://play.google.com/music/services/addplaylist";
     final String HTTPS_PLAY_GOOGLE_COM_MUSIC_PLAY_SONGID = "https://play.google.com/music/play?u=0&songid=%1$s&pt=e";
 
-    void login(String email, String password) throws IOException,
-            URISyntaxException, InvalidCredentialsException;
+    void login(String email, String password) throws IOException, URISyntaxException, InvalidCredentialsException;
 
     Collection<Song> getAllSongs() throws IOException, URISyntaxException;
 
@@ -60,12 +61,9 @@ public interface IGoogleMusicAPI
 
     DeletePlaylist deletePlaylist(String id) throws Exception;
 
-    Collection<File> downloadSongs(Collection<Song> songs)
-            throws MalformedURLException, IOException, URISyntaxException,
-            IllegalArgumentException;
+    Collection<File> downloadSongs(Collection<Song> songs, Context context) throws MalformedURLException, IOException, URISyntaxException, IllegalArgumentException;
 
-    File downloadSong(Song song) throws MalformedURLException, IOException,
-            URISyntaxException, IllegalArgumentException;
+    File downloadSong(Song song, Context context) throws MalformedURLException, IOException, URISyntaxException, IllegalArgumentException;
 
     QueryResponse search(String query) throws Exception;
 

@@ -10,6 +10,8 @@
  ******************************************************************************/
 package com.jb.dailyplay.skyjam.interfaces;
 
+import android.content.Context;
+
 import com.jb.dailyplay.interfaces.IGoogleMusicAPI;
 import com.jb.dailyplay.skyjam.model.Playlists;
 import com.jb.dailyplay.skyjam.model.Track;
@@ -31,9 +33,9 @@ public interface IGoogleSkyJam extends IGoogleMusicAPI
 
 	Collection<Track> getAllTracks() throws ClientProtocolException, IOException, URISyntaxException;
 
-	Collection<File> downloadTracks(Collection<Track> tracks) throws URISyntaxException, ClientProtocolException, IOException;
+	Collection<File> downloadTracks(Collection<Track> tracks, Context context) throws URISyntaxException, ClientProtocolException, IOException;
 
-	File downloadTrack(Track track) throws URISyntaxException, ClientProtocolException, IOException;
+	File downloadTrack(Track track, Context context) throws URISyntaxException, ClientProtocolException, IOException;
 
 	Playlists getAllSkyJamPlaylists() throws ClientProtocolException, IOException, URISyntaxException;
 
