@@ -35,12 +35,18 @@ import com.jb.dailyplay.model.SongUrl;
 import com.jb.dailyplay.model.Tune;
 import com.jb.dailyplay.comm.HttpUrlConnector;
 
+import java.io.BufferedInputStream;
 import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.io.StringReader;
 import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.net.URL;
+import java.net.URLConnection;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
@@ -261,12 +267,33 @@ public class GoogleMusicAPI implements IGoogleMusicAPI {
     protected File downloadTune(final Tune song, final Context context) throws MalformedURLException, IOException, URISyntaxException {
 //        final File file = new File(storageDirectory.getAbsolutePath() + System.getProperty("path.separator") + song.getId() + MP3);
 //        final File file = new File(context.getFilesDir(), song.getId() + ".mp3");
-        final String fileName = song.getTitle() + MP3;
-        final File file = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_MUSIC), fileName);
-        if (!file.exists()) {
-            Files.write(Resources.toByteArray(getTuneURL(song).toURL()), file);
+        String fileName = song.getTitle() + MP3;
+//        final File file = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_MUSIC), fileName);
+//        if (!file.exists()) {
+//            Files.write(Resources.toByteArray(getTuneURL(song).toURL()), file);
+//        }
+//        return file;
+        fileName = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_MUSIC) + "/" + fileName;
+        URL url = getTuneURL(song).toURL();
+        URLConnection connection = url.openConnection();
+        connection.connect();
+        InputStream input = new BufferedInputStream(url.openStream());
+        OutputStream output = new FileOutputStream(fileName);
+        int count;
+        byte data[] = new byte[1024];
+        long total = 0;
+        while ((count = input.read(data)) != -1) {
+            total += count;
+            output.write(data, 0, count);
         }
+        output.flush();
+        output.close();
+        input.close();
+
+        File file = new File(Environment.getExternalStorageDirectory(), fileName);
+
         return file;
+
     }
 
     @Override

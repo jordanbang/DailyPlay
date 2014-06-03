@@ -1,7 +1,11 @@
 package com.jb.dailyplay.activities;
 
 import android.app.Activity;
+import android.media.MediaPlayer;
+import android.media.MediaScannerConnection;
+import android.net.Uri;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 
@@ -49,12 +53,31 @@ public class MainActivity extends Activity {
                 String password = "bangiajobigbang1";
                 String username = "jordan.bangia@gmail.com";
                 GoogleMusicAPI api = new GoogleMusicAPI();
-                File file = null;
                 try {
                     api.login(username, password);
                     Collection<Song> songs = api.getAllSongs();
-                    Song[] songArray = (Song[]) songs.toArray();
-                    file = api.downloadSong(songArray[0], getBaseContext());
+
+//                    MediaPlayer mp = new MediaPlayer();
+//                    mp.setDataSource(api.getSongURL(songs.iterator().next()).toString());
+//                    mp.prepare();
+//                    mp.start();
+                    Song temp = null;
+                    int count = 0;
+                    for (Song song : songs) {
+                        count++;
+                        if (count == 20) {
+                            temp = song;
+                        }
+
+                    }
+                    final File file = api.downloadSong(temp, getBaseContext());
+                    MediaScannerConnection.scanFile(getBaseContext(), new String[] {file.getAbsolutePath()}, null, new MediaScannerConnection.OnScanCompletedListener() {
+                        @Override
+                        public void onScanCompleted(String s, Uri uri) {
+                            Log.i("External Storage", "Scanned " + s);
+                            Log.i("External Storage", "Uri " + uri);
+                        }
+                    });
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
