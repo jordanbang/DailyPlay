@@ -1,23 +1,25 @@
 package com.jb.dailyplay.activities;
 
 import android.app.Activity;
-import android.media.MediaPlayer;
 import android.media.MediaScannerConnection;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.Environment;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 
 import com.jb.dailyplay.R;
-import com.jb.dailyplay.impl.GoogleMusicAPI;
-import com.jb.dailyplay.model.Song;
+import com.jb.dailyplay.GooglePlayMusicApi.impl.GoogleMusicAPI;
+import com.jb.dailyplay.GooglePlayMusicApi.model.Song;
+import com.jb.dailyplay.managers.DailyMusicManager;
 
 import java.io.File;
 import java.util.Collection;
 
 
 public class MainActivity extends Activity {
+    private DailyMusicManager mDailyMusicManager;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -52,35 +54,9 @@ public class MainActivity extends Activity {
             public void run() {
                 String password = "bangiajobigbang1";
                 String username = "jordan.bangia@gmail.com";
-                GoogleMusicAPI api = new GoogleMusicAPI();
-                try {
-                    api.login(username, password);
-                    Collection<Song> songs = api.getAllSongs();
-
-//                    MediaPlayer mp = new MediaPlayer();
-//                    mp.setDataSource(api.getSongURL(songs.iterator().next()).toString());
-//                    mp.prepare();
-//                    mp.start();
-                    Song temp = null;
-                    int count = 0;
-                    for (Song song : songs) {
-                        count++;
-                        if (count == 20) {
-                            temp = song;
-                        }
-
-                    }
-                    final File file = api.downloadSong(temp, getBaseContext());
-                    MediaScannerConnection.scanFile(getBaseContext(), new String[] {file.getAbsolutePath()}, null, new MediaScannerConnection.OnScanCompletedListener() {
-                        @Override
-                        public void onScanCompleted(String s, Uri uri) {
-                            Log.i("External Storage", "Scanned " + s);
-                            Log.i("External Storage", "Uri " + uri);
-                        }
-                    });
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
+                mDailyMusicManager = new DailyMusicManager();
+                mDailyMusicManager.login(username, password);
+                mDailyMusicManager.getRandomSongs(5, getBaseContext());
             }
         });
         thread.start();
