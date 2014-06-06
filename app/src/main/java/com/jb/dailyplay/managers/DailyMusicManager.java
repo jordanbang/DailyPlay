@@ -8,6 +8,7 @@ import android.util.Log;
 
 import com.jb.dailyplay.GooglePlayMusicApi.impl.GoogleMusicAPI;
 import com.jb.dailyplay.GooglePlayMusicApi.model.Song;
+import com.mpatric.mp3agic.Mp3File;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -84,6 +85,7 @@ public class DailyMusicManager {
         Collection<Song> downloadList = getSongForRandomIndices(randomNumbers);
         try {
             Collection<File> downloadFiles = mApi.downloadSongs(downloadList, context);
+//            Mp3File file = new Mp3File(downloadFiles.iterator().next());
             addFilesToMusicList(downloadFiles, context);
         } catch (Exception e) {
             Log.e("Download files failed", e.getMessage());
