@@ -19,6 +19,9 @@ import com.jb.dailyplay.GooglePlayMusicApi.model.Playlist;
 import com.jb.dailyplay.GooglePlayMusicApi.model.Playlists;
 import com.jb.dailyplay.GooglePlayMusicApi.model.QueryResponse;
 import com.jb.dailyplay.GooglePlayMusicApi.model.Song;
+import com.mpatric.mp3agic.InvalidDataException;
+import com.mpatric.mp3agic.NotSupportedException;
+import com.mpatric.mp3agic.UnsupportedTagException;
 
 import java.io.File;
 import java.io.IOException;
@@ -61,9 +64,9 @@ public interface IGoogleMusicAPI
 
     DeletePlaylist deletePlaylist(String id) throws Exception;
 
-    Collection<File> downloadSongs(Collection<Song> songs, Context context) throws MalformedURLException, IOException, URISyntaxException, IllegalArgumentException;
+    Collection<com.jb.dailyplay.models.SongFile> downloadSongs(Collection<Song> songs, Context context) throws MalformedURLException, IOException, URISyntaxException, IllegalArgumentException, InvalidDataException, NotSupportedException, UnsupportedTagException;
 
-    File downloadSong(Song song, Context context) throws MalformedURLException, IOException, URISyntaxException, IllegalArgumentException;
+    com.jb.dailyplay.models.SongFile downloadSong(Song song, Context context) throws MalformedURLException, IOException, URISyntaxException, IllegalArgumentException, InvalidDataException, NotSupportedException, UnsupportedTagException;
 
     QueryResponse search(String query) throws Exception;
 

@@ -3,11 +3,13 @@ package com.jb.dailyplay.managers;
 import android.content.Context;
 import android.media.MediaScannerConnection;
 import android.net.Uri;
-import android.os.Environment;
 import android.util.Log;
 
 import com.jb.dailyplay.GooglePlayMusicApi.impl.GoogleMusicAPI;
 import com.jb.dailyplay.GooglePlayMusicApi.model.Song;
+import com.jb.dailyplay.models.SongFile;
+import com.mpatric.mp3agic.ID3v2;
+import com.mpatric.mp3agic.ID3v22Tag;
 import com.mpatric.mp3agic.Mp3File;
 
 import java.io.File;
@@ -23,6 +25,7 @@ import java.util.Random;
 public class DailyMusicManager {
     private final GoogleMusicAPI mApi;
     private Collection<Song> mSongList;
+    private Collection<SongFile> mDownloadedFiles;
     private int mSongCount = 0;
 
     public DailyMusicManager() {
@@ -42,8 +45,8 @@ public class DailyMusicManager {
         return ret;
     }
 
-    private Collection<Song> getSongForRandomIndices(List<Integer> randomNumbers) {
-        Collection<Song> songs = new ArrayList<Song>();
+    private ArrayList<Song> getSongForRandomIndices(List<Integer> randomNumbers) {
+        ArrayList<Song> songs = new ArrayList<Song>();
 
         int count = 0;
         for (Song song : mSongList) {
@@ -55,15 +58,37 @@ public class DailyMusicManager {
         return songs;
     }
 
-    private void addFilesToMusicList(Collection<File> downloadFiles, Context context) {
-        for (File file : downloadFiles) {
-            MediaScannerConnection.scanFile(context, new String[]{file.getPath()}, new String[]{"audio/mpeg"}, new MediaScannerConnection.OnScanCompletedListener() {
+    private void addFilesToMusicList(Collection<SongFile> downloadFiles, Context context) {
+        for (SongFile file : downloadFiles) {
+            MediaScannerConnection.scanFile(context, new String[]{file.getFile().getPath()}, new String[]{"audio/mpeg"}, new MediaScannerConnection.OnScanCompletedListener() {
                 @Override
                 public void onScanCompleted(String s, Uri uri) {
                     Log.i("External Storage", "Scanned " + s);
                     Log.i("External Storage", "Uri " + uri);
                 }
             });
+        }
+    }
+
+    private void createMp3TagsForFiles(Collection<SongFile> files) {
+        ArrayList<Mp3File> mp3Files = new ArrayList<Mp3File>();
+        for (SongFile songFile : files) {
+            File file = songFile.getFile();
+            Song song = (Song) songFile.getSong();
+            try {
+                Mp3File mp3File = new Mp3File(file.getPath());
+                if (!mp3File.hasId3v2Tag()) {
+                    ID3v2 tags = new ID3v22Tag();
+                    mp3File.setId3v2Tag(tags);
+                    tags.setArtist(song.getArtist());
+                    tags.setAlbum(song.getAlbum());
+                    tags.setTitle(song.getTitle());
+                    mp3File.save(file.getPath());
+                }
+                mp3Files.add(mp3File);
+            } catch (Exception e) {
+                Log.e("Tagging song: " + file.getPath() + " failed", e.getMessage() + e.getClass().toString());
+            }
         }
     }
 
@@ -79,14 +104,20 @@ public class DailyMusicManager {
 
     public void getRandomSongs(int number, Context context) {
         if (mSongList == null || mSongList.size() == 0) {
+            Log.i("DailyMusicManager", "Downloading song list");
             downloadSongList();
+            Log.i("DailyMusicManager", "Downloading song list complete");
         }
         List<Integer> randomNumbers = getRandomNumbers(number);
+        Log.i("DailyMusicManager", "Getting random numbers");
         Collection<Song> downloadList = getSongForRandomIndices(randomNumbers);
         try {
-            Collection<File> downloadFiles = mApi.downloadSongs(downloadList, context);
-//            Mp3File file = new Mp3File(downloadFiles.iterator().next());
-            addFilesToMusicList(downloadFiles, context);
+            Log.i("DailyMusicManager", "Starting to download songs");
+            mDownloadedFiles = mApi.downloadSongs(downloadList, context);
+            Log.i("DailyMusicManager", "Songs downloaded");
+//            createMp3TagsForFiles(mDownloadedFiles);
+            addFilesToMusicList(mDownloadedFiles, context);
+            Log.i("ALL DONE !!!", "");
         } catch (Exception e) {
             Log.e("Download files failed", e.getMessage());
         }

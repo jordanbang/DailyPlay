@@ -28,6 +28,10 @@ import java.util.ArrayList;
 import java.util.Collection;
 
 import com.google.common.base.Strings;
+import com.jb.dailyplay.models.SongFile;
+import com.mpatric.mp3agic.InvalidDataException;
+import com.mpatric.mp3agic.NotSupportedException;
+import com.mpatric.mp3agic.UnsupportedTagException;
 
 public class GoogleSkyJamAPI extends GoogleMusicAPI implements IGoogleSkyJam {
     public GoogleSkyJamAPI() {
@@ -75,9 +79,9 @@ public class GoogleSkyJamAPI extends GoogleMusicAPI implements IGoogleSkyJam {
     }
 
     @Override
-    public Collection<File> downloadTracks(final Collection<Track> tracks, final Context context)
-            throws URISyntaxException, IOException {
-        final Collection<File> files = new ArrayList<File>();
+    public Collection<SongFile> downloadTracks(final Collection<Track> tracks, final Context context)
+            throws URISyntaxException, IOException, InvalidDataException, NotSupportedException, UnsupportedTagException {
+        final Collection<SongFile> files = new ArrayList<SongFile>();
         for (final Track track : tracks) {
             files.add(downloadTrack(track, context));
         }
@@ -91,7 +95,7 @@ public class GoogleSkyJamAPI extends GoogleMusicAPI implements IGoogleSkyJam {
     }
 
     @Override
-    public File downloadTrack(final Track track, final Context context) throws URISyntaxException, IOException {
+    public SongFile downloadTrack(final Track track, final Context context) throws URISyntaxException, IOException, InvalidDataException, NotSupportedException, UnsupportedTagException {
         return downloadTune(track, context);
         /*
          * File file = new File(storageDirectory.getAbsolutePath() +

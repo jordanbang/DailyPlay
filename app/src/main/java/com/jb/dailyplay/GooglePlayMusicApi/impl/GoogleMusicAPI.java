@@ -12,6 +12,7 @@ package com.jb.dailyplay.GooglePlayMusicApi.impl;
 
 import android.content.Context;
 import android.os.Environment;
+import android.util.Log;
 
 import com.google.common.base.Strings;
 import com.google.gson.Gson;
@@ -32,6 +33,15 @@ import com.jb.dailyplay.GooglePlayMusicApi.model.Song;
 import com.jb.dailyplay.GooglePlayMusicApi.model.SongUrl;
 import com.jb.dailyplay.GooglePlayMusicApi.model.Tune;
 import com.jb.dailyplay.GooglePlayMusicApi.comm.HttpUrlConnector;
+import com.jb.dailyplay.models.SongFile;
+import com.mpatric.mp3agic.ID3v1;
+import com.mpatric.mp3agic.ID3v1Tag;
+import com.mpatric.mp3agic.ID3v2;
+import com.mpatric.mp3agic.ID3v22Tag;
+import com.mpatric.mp3agic.InvalidDataException;
+import com.mpatric.mp3agic.Mp3File;
+import com.mpatric.mp3agic.NotSupportedException;
+import com.mpatric.mp3agic.UnsupportedTagException;
 
 import java.io.BufferedInputStream;
 import java.io.File;
@@ -54,7 +64,8 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public class GoogleMusicAPI implements IGoogleMusicAPI {
-    public static final String MP3 = ".mp3";
+    private static final String MP3 = ".mp3";
+    private static final String TEMP = "temp.mp3";
     protected final IGoogleHttpClient client;
     protected final IJsonDeserializer deserializer;
     protected final File storageDirectory;
@@ -145,7 +156,7 @@ public class GoogleMusicAPI implements IGoogleMusicAPI {
                 if (!Strings.isNullOrEmpty(gson.fromJson(values.get(36), String.class))) {
                     s.setUrl("https:" + gson.fromJson(values.get(36), String.class));
                 }
-
+                Log.i("GoogleMusicApi", "Added song: " + s.getName());
                 chunkedCollection.add(s);
             }
         }
@@ -231,8 +242,8 @@ public class GoogleMusicAPI implements IGoogleMusicAPI {
     }
 
     @Override
-    public Collection<File> downloadSongs(final Collection<Song> songs, final Context context) throws MalformedURLException, IOException, URISyntaxException {
-        final Collection<File> files = new ArrayList<File>();
+    public Collection<SongFile> downloadSongs(final Collection<Song> songs, final Context context) throws MalformedURLException, IOException, URISyntaxException, InvalidDataException {
+        final Collection<SongFile> files = new ArrayList<SongFile>();
         for (final Song song : songs) {
             files.add(downloadSong(song, context));
         }
@@ -240,7 +251,7 @@ public class GoogleMusicAPI implements IGoogleMusicAPI {
     }
 
     @Override
-    public File downloadSong(final Song song, final Context context) throws MalformedURLException, IOException, URISyntaxException {
+    public SongFile downloadSong(final Song song, final Context context) throws MalformedURLException, IOException, URISyntaxException, InvalidDataException {
         return downloadTune(song, context);
     }
 
@@ -262,22 +273,21 @@ public class GoogleMusicAPI implements IGoogleMusicAPI {
         return deserializer.deserialize(response, QueryResponse.class);
     }
 
-    protected File downloadTune(final Tune song, final Context context) throws MalformedURLException, IOException, URISyntaxException {
+    protected SongFile downloadTune(final Tune song, final Context context) throws MalformedURLException, IOException, URISyntaxException, InvalidDataException {
         String fileName = song.getTitle() + MP3;
-        File file = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_MUSIC), fileName);
-        if (file.exists()) {
-            return file;
+        String fullPath = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_MUSIC) + "/" + fileName;
+
+        File retFile = new File(fullPath);
+        if (retFile.exists()) {
+            return new SongFile(retFile, song);
         }
 
-
-
-
-        String fullPath = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_MUSIC) + "/" + fileName;
+        String fullTempPath = context.getFilesDir().getPath() + "/" + TEMP;
         URL url = getTuneURL(song).toURL();
         URLConnection connection = url.openConnection();
         connection.connect();
         InputStream input = new BufferedInputStream(url.openStream());
-        OutputStream output = new FileOutputStream(fullPath);
+        OutputStream output = new FileOutputStream(fullTempPath);
         int count;
         byte data[] = new byte[1024];
         long total = 0;
@@ -289,8 +299,23 @@ public class GoogleMusicAPI implements IGoogleMusicAPI {
         output.close();
         input.close();
 
+        Mp3File file = null;
+        try {
+            file = new Mp3File(fullTempPath);
+            if (!file.hasId3v1Tag()) {
+                ID3v1 tags = new ID3v1Tag();
+                file.setId3v1Tag(tags);
+                tags.setArtist(song.getArtist());
+                tags.setAlbum(song.getAlbum());
+                tags.setTitle(song.getTitle());
+                file.save(fullPath);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
 
-        return file;
+
+        return new SongFile(retFile, song);
 
     }
 

@@ -16,6 +16,9 @@ import com.jb.dailyplay.GooglePlayMusicApi.interfaces.IGoogleMusicAPI;
 import com.jb.dailyplay.GooglePlayMusicApi.skyjam.model.Playlists;
 import com.jb.dailyplay.GooglePlayMusicApi.skyjam.model.Track;
 import com.jb.dailyplay.GooglePlayMusicApi.skyjam.model.TrackFeed;
+import com.mpatric.mp3agic.InvalidDataException;
+import com.mpatric.mp3agic.NotSupportedException;
+import com.mpatric.mp3agic.UnsupportedTagException;
 
 import org.apache.http.client.ClientProtocolException;
 
@@ -33,9 +36,9 @@ public interface IGoogleSkyJam extends IGoogleMusicAPI
 
 	Collection<Track> getAllTracks() throws ClientProtocolException, IOException, URISyntaxException;
 
-	Collection<File> downloadTracks(Collection<Track> tracks, Context context) throws URISyntaxException, ClientProtocolException, IOException;
+	Collection<com.jb.dailyplay.models.SongFile> downloadTracks(Collection<Track> tracks, Context context) throws URISyntaxException, ClientProtocolException, IOException, InvalidDataException, NotSupportedException, UnsupportedTagException;
 
-	File downloadTrack(Track track, Context context) throws URISyntaxException, ClientProtocolException, IOException;
+	com.jb.dailyplay.models.SongFile downloadTrack(Track track, Context context) throws URISyntaxException, ClientProtocolException, IOException, InvalidDataException, NotSupportedException, UnsupportedTagException;
 
 	Playlists getAllSkyJamPlaylists() throws ClientProtocolException, IOException, URISyntaxException;
 
