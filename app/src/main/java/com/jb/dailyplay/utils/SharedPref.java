@@ -30,8 +30,17 @@ public class SharedPref {
         editor.commit();
     }
 
+    public static void setLong(String Varname, long val) {
+        editor.putLong(Varname, val);
+        editor.commit();
+    }
+
     public static int getInt(String VarName, int DefValue) {
         return settings.getInt(VarName, DefValue);
+    }
+
+    public static long getLong(String VarName, int DefValue) {
+        return settings.getLong(VarName, DefValue);
     }
 
     public static String getString(String VarName) {

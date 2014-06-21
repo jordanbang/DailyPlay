@@ -14,6 +14,7 @@ import com.google.android.gms.auth.GoogleAuthUtil;
 import com.google.android.gms.common.AccountPicker;
 import com.jb.dailyplay.R;
 import com.jb.dailyplay.managers.DailyMusicManager;
+import com.jb.dailyplay.utils.SharedPref;
 
 
 public class MainActivity extends Activity {
@@ -29,6 +30,7 @@ public class MainActivity extends Activity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        SharedPref.initSharedPref(this, getResources().getString(R.string.app_name));
         mUpdateTextView = (TextView) findViewById(R.id.update);
 
         new GetDailyPlayMusicTask().execute();
@@ -71,7 +73,7 @@ public class MainActivity extends Activity {
 //        super.onActivityResult(requestCode, resultCode, data);
 //    }
 
-    private class GetDailyPlayMusicTask extends AsyncTask<Void, Void, Void> {
+    private class GetDailyPlayMusicTask extends AsyncTask<Void, String, Void> {
 
         @Override
         protected void onPreExecute() {
@@ -85,14 +87,15 @@ public class MainActivity extends Activity {
             String username = "george.doe231@gmail.com";
             mDailyMusicManager = new DailyMusicManager();
             mDailyMusicManager.login(username, password);
+            onProgressUpdate("Completed login");
             mDailyMusicManager.getRandomSongs(5, getBaseContext());
             return null;
         }
 
         @Override
-        protected void onProgressUpdate(Void... values) {
+        protected void onProgressUpdate(String... values) {
             super.onProgressUpdate(values);
-            mUpdateTextView.setText("Finished getting DailyPlay list");
+            mUpdateTextView.setText(values[0]);
         }
     }
 }

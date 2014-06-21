@@ -4,15 +4,23 @@ import android.content.Context;
 import android.media.MediaScannerConnection;
 import android.net.Uri;
 import android.util.Log;
+import android.widget.ShareActionProvider;
 
+import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
 import com.jb.dailyplay.GooglePlayMusicApi.impl.GoogleMusicAPI;
 import com.jb.dailyplay.GooglePlayMusicApi.model.Song;
 import com.jb.dailyplay.models.SongFile;
+import com.jb.dailyplay.utils.SharedPref;
+import com.jb.dailyplay.utils.StringUtils;
 import com.mpatric.mp3agic.ID3v2;
 import com.mpatric.mp3agic.ID3v22Tag;
 import com.mpatric.mp3agic.Mp3File;
 
 import java.io.File;
+import java.io.IOException;
+import java.lang.reflect.Type;
+import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -27,6 +35,11 @@ public class DailyMusicManager {
     private Collection<Song> mSongList;
     private Collection<SongFile> mDownloadedFiles;
     private int mSongCount = 0;
+
+    private static final String LAST_SONG_LIST_SYNC = "last_sync";
+    private static final String SONG_LIST = "song_list";
+    private static final long ONE_WEEK = 1000*60*60*24*7;
+    private static final Type LIST_OF_SONGS_TYPE = new TypeToken<Collection<Song>>(){}.getType();
 
     public DailyMusicManager() {
         mApi = new GoogleMusicAPI();
@@ -92,11 +105,23 @@ public class DailyMusicManager {
         }
     }
 
-    /*Below calls need to be asynchronous*/
-    public void downloadSongList() {
+    /*Below calls are synchronous, need to be run on a background thread*/
+    public void loadSongList() {
+            if (songListIsOutDated()) {
+                downloadSongList();
+            } else {
+                loadSongListFromSharedPref();
+            }
+    }
+
+    private void downloadSongList() {
         try {
             mSongList = mApi.getAllSongs();
             mSongCount = mSongList.size();
+            SharedPref.setLong(LAST_SONG_LIST_SYNC, System.currentTimeMillis());
+            Gson gson = new Gson();
+
+            SharedPref.setString(SONG_LIST, gson.toJson(mSongList, LIST_OF_SONGS_TYPE));
         } catch (Exception e) {
             Log.e("Get All Songs error", e.getMessage());
         }
@@ -105,7 +130,7 @@ public class DailyMusicManager {
     public void getRandomSongs(int number, Context context) {
         if (mSongList == null || mSongList.size() == 0) {
             Log.i("DailyMusicManager", "Downloading song list");
-            downloadSongList();
+            loadSongList();
             Log.i("DailyMusicManager", "Downloading song list complete");
         }
         List<Integer> randomNumbers = getRandomNumbers(number);
@@ -129,5 +154,23 @@ public class DailyMusicManager {
         } catch (Exception e) {
             Log.e("Login Error", e.getMessage());
         }
+    }
+
+    private void loadSongListFromSharedPref() {
+        String songListAsString = SharedPref.getString(SONG_LIST);
+        if (StringUtils.isEmptyString(songListAsString)) {
+            downloadSongList();
+        } else {
+            Gson gson = new Gson();
+            mSongList = gson.fromJson(songListAsString, LIST_OF_SONGS_TYPE);
+        }
+
+    }
+
+    /*Below calls don't need to be asynchronous*/
+    private boolean songListIsOutDated() {
+        long currentTime = System.currentTimeMillis();
+        long lastSync = SharedPref.getLong(LAST_SONG_LIST_SYNC, 0);
+        return (lastSync - currentTime) > ONE_WEEK;
     }
 }
