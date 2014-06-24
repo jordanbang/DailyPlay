@@ -1,11 +1,9 @@
 package com.jb.dailyplay.activities;
 
-import android.accounts.AccountManager;
 import android.app.Activity;
 import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.TextView;
@@ -13,6 +11,7 @@ import android.widget.TextView;
 import com.google.android.gms.auth.GoogleAuthUtil;
 import com.google.android.gms.common.AccountPicker;
 import com.jb.dailyplay.R;
+import com.jb.dailyplay.listeners.ProgressUpdateListener;
 import com.jb.dailyplay.managers.DailyMusicManager;
 import com.jb.dailyplay.utils.SharedPref;
 
@@ -73,7 +72,7 @@ public class MainActivity extends Activity {
 //        super.onActivityResult(requestCode, resultCode, data);
 //    }
 
-    private class GetDailyPlayMusicTask extends AsyncTask<Void, String, Void> {
+    public class GetDailyPlayMusicTask extends AsyncTask<Void, String, Void> implements ProgressUpdateListener {
 
         @Override
         protected void onPreExecute() {
@@ -88,7 +87,7 @@ public class MainActivity extends Activity {
             mDailyMusicManager = new DailyMusicManager();
             mDailyMusicManager.login(username, password);
             onProgressUpdate("Completed login");
-            mDailyMusicManager.getRandomSongs(5, getBaseContext());
+            mDailyMusicManager.getDailyPlayMusic(5, getBaseContext(), this);
             return null;
         }
 
@@ -96,6 +95,11 @@ public class MainActivity extends Activity {
         protected void onProgressUpdate(String... values) {
             super.onProgressUpdate(values);
             mUpdateTextView.setText(values[0]);
+        }
+
+        @Override
+        public void updateProgress(String... strings) {
+            onProgressUpdate(strings);
         }
     }
 }

@@ -4,12 +4,12 @@ import android.content.Context;
 import android.media.MediaScannerConnection;
 import android.net.Uri;
 import android.util.Log;
-import android.widget.ShareActionProvider;
 
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 import com.jb.dailyplay.GooglePlayMusicApi.impl.GoogleMusicAPI;
 import com.jb.dailyplay.GooglePlayMusicApi.model.Song;
+import com.jb.dailyplay.listeners.ProgressUpdateListener;
 import com.jb.dailyplay.models.SongFile;
 import com.jb.dailyplay.utils.SharedPref;
 import com.jb.dailyplay.utils.StringUtils;
@@ -18,9 +18,7 @@ import com.mpatric.mp3agic.ID3v22Tag;
 import com.mpatric.mp3agic.Mp3File;
 
 import java.io.File;
-import java.io.IOException;
 import java.lang.reflect.Type;
-import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -120,31 +118,35 @@ public class DailyMusicManager {
             mSongCount = mSongList.size();
             SharedPref.setLong(LAST_SONG_LIST_SYNC, System.currentTimeMillis());
             Gson gson = new Gson();
-
             SharedPref.setString(SONG_LIST, gson.toJson(mSongList, LIST_OF_SONGS_TYPE));
         } catch (Exception e) {
             Log.e("Get All Songs error", e.getMessage());
         }
     }
 
-    public void getRandomSongs(int number, Context context) {
+    public void getDailyPlayMusic(int number, Context context, ProgressUpdateListener listener) {
         if (mSongList == null || mSongList.size() == 0) {
             Log.i("DailyMusicManager", "Downloading song list");
+            listener.updateProgress("Downloading song list");
             loadSongList();
             Log.i("DailyMusicManager", "Downloading song list complete");
+            listener.updateProgress("Downloaded song list");
         }
         List<Integer> randomNumbers = getRandomNumbers(number);
         Log.i("DailyMusicManager", "Getting random numbers");
+        listener.updateProgress("Getting random list of songs");
         Collection<Song> downloadList = getSongForRandomIndices(randomNumbers);
         try {
             Log.i("DailyMusicManager", "Starting to download songs");
+            listener.updateProgress("Starting to download songs");
             mDownloadedFiles = mApi.downloadSongs(downloadList, context);
             Log.i("DailyMusicManager", "Songs downloaded");
-//            createMp3TagsForFiles(mDownloadedFiles);
+            listener.updateProgress("Songs downloaded");
             addFilesToMusicList(mDownloadedFiles, context);
             Log.i("ALL DONE !!!", "");
         } catch (Exception e) {
             Log.e("Download files failed", e.getMessage());
+            listener.updateProgress("A problem has occurred, please try again later");
         }
     }
 
