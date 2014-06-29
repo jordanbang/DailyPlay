@@ -3,6 +3,7 @@ package com.jb.dailyplay.managers;
 import android.content.Context;
 import android.media.MediaScannerConnection;
 import android.net.Uri;
+import android.os.Environment;
 import android.text.format.DateUtils;
 import android.util.Log;
 
@@ -12,12 +13,12 @@ import com.jb.dailyplay.GooglePlayMusicApi.impl.GoogleMusicAPI;
 import com.jb.dailyplay.GooglePlayMusicApi.model.Song;
 import com.jb.dailyplay.listeners.ProgressUpdateListener;
 import com.jb.dailyplay.models.SongFile;
+import com.jb.dailyplay.utils.ConnectionUtils;
 import com.jb.dailyplay.utils.SharedPref;
 import com.jb.dailyplay.utils.StringUtils;
 import com.mpatric.mp3agic.ID3v2;
 import com.mpatric.mp3agic.ID3v22Tag;
 import com.mpatric.mp3agic.Mp3File;
-
 
 import java.io.File;
 import java.lang.reflect.Type;
@@ -40,6 +41,8 @@ public class DailyMusicManager {
     private static final String SONG_LIST = "song_list";
     private static final long ONE_WEEK = DateUtils.WEEK_IN_MILLIS;
     private static final Type LIST_OF_SONGS_TYPE = new TypeToken<Collection<Song>>(){}.getType();
+    private static final long MEGABYTE = 1024L;
+    private static final long TEN_MEGABYTES = 10*MEGABYTE;
 
     public DailyMusicManager() {
         mApi = new GoogleMusicAPI();
@@ -127,6 +130,16 @@ public class DailyMusicManager {
     }
 
     public void getDailyPlayMusic(int number, Context context, ProgressUpdateListener listener) {
+        if (!ConnectionUtils.isConnectedWifi(context)) {
+            listener.updateProgress("Your device is not connected to Wi-fi.  Please connect to wi-fi to continue using DailyPlay.");
+            return;
+        }
+
+        if (!isFreeSpace(number)) {
+            listener.updateProgress("Not enough space available to download the requested number of songs");
+            return;
+        }
+
         if (mSongList == null || mSongList.size() == 0) {
             Log.i("DailyMusicManager", "Downloading song list");
             listener.updateProgress("Downloading song list");
@@ -177,5 +190,12 @@ public class DailyMusicManager {
         long currentTime = System.currentTimeMillis();
         long lastSync = SharedPref.getLong(LAST_SONG_LIST_SYNC, 0);
         return (currentTime - lastSync) > ONE_WEEK;
+    }
+
+    private boolean isFreeSpace(int numberOfSongs) {
+        File musicSaveFolder = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_MUSIC);
+        long freeSpace = musicSaveFolder.getFreeSpace();
+        long requiredSpace = numberOfSongs * TEN_MEGABYTES;
+        return freeSpace > requiredSpace;
     }
 }

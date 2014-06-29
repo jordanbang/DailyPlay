@@ -13,6 +13,7 @@ import com.google.android.gms.common.AccountPicker;
 import com.jb.dailyplay.R;
 import com.jb.dailyplay.listeners.ProgressUpdateListener;
 import com.jb.dailyplay.managers.DailyMusicManager;
+import com.jb.dailyplay.utils.ConnectionUtils;
 import com.jb.dailyplay.utils.SharedPref;
 
 
@@ -33,6 +34,7 @@ public class MainActivity extends Activity {
         mUpdateTextView = (TextView) findViewById(R.id.update);
 
         new GetDailyPlayMusicTask().execute();
+
     }
 
     public void chooseGoogleAccount() {
@@ -71,6 +73,14 @@ public class MainActivity extends Activity {
 //        }
 //        super.onActivityResult(requestCode, resultCode, data);
 //    }
+
+    private void getDailyPlayList() {
+        if (ConnectionUtils.isConnectedWifi(this)) {
+
+        } else {
+            mUpdateTextView.setText("Your device is not connected to Wi-fi.  Please connect to wi-fi to continue using DailyPlay.");
+        }
+    }
 
     public class GetDailyPlayMusicTask extends AsyncTask<Void, String, Void> implements ProgressUpdateListener {
 
