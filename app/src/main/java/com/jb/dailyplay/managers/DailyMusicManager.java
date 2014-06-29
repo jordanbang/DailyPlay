@@ -3,6 +3,7 @@ package com.jb.dailyplay.managers;
 import android.content.Context;
 import android.media.MediaScannerConnection;
 import android.net.Uri;
+import android.text.format.DateUtils;
 import android.util.Log;
 
 import com.google.gson.Gson;
@@ -16,6 +17,7 @@ import com.jb.dailyplay.utils.StringUtils;
 import com.mpatric.mp3agic.ID3v2;
 import com.mpatric.mp3agic.ID3v22Tag;
 import com.mpatric.mp3agic.Mp3File;
+
 
 import java.io.File;
 import java.lang.reflect.Type;
@@ -36,7 +38,7 @@ public class DailyMusicManager {
 
     private static final String LAST_SONG_LIST_SYNC = "last_sync";
     private static final String SONG_LIST = "song_list";
-    private static final long ONE_WEEK = 1000*60*60*24*7;
+    private static final long ONE_WEEK = DateUtils.WEEK_IN_MILLIS;
     private static final Type LIST_OF_SONGS_TYPE = new TypeToken<Collection<Song>>(){}.getType();
 
     public DailyMusicManager() {
@@ -165,6 +167,7 @@ public class DailyMusicManager {
         } else {
             Gson gson = new Gson();
             mSongList = gson.fromJson(songListAsString, LIST_OF_SONGS_TYPE);
+            mSongCount = mSongList.size();
         }
 
     }
@@ -173,6 +176,6 @@ public class DailyMusicManager {
     private boolean songListIsOutDated() {
         long currentTime = System.currentTimeMillis();
         long lastSync = SharedPref.getLong(LAST_SONG_LIST_SYNC, 0);
-        return (lastSync - currentTime) > ONE_WEEK;
+        return (currentTime - lastSync) > ONE_WEEK;
     }
 }

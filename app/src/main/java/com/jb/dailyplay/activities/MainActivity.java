@@ -86,7 +86,7 @@ public class MainActivity extends Activity {
             String username = "george.doe231@gmail.com";
             mDailyMusicManager = new DailyMusicManager();
             mDailyMusicManager.login(username, password);
-            onProgressUpdate("Completed login");
+            publishProgress("Completed login");
             mDailyMusicManager.getDailyPlayMusic(5, getBaseContext(), this);
             return null;
         }
@@ -99,7 +99,7 @@ public class MainActivity extends Activity {
 
         @Override
         public void updateProgress(String... strings) {
-            onProgressUpdate(strings);
+            publishProgress(strings);
         }
     }
 }
