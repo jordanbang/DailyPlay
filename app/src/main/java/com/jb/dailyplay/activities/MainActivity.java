@@ -11,6 +11,7 @@ import android.widget.TextView;
 import com.google.android.gms.auth.GoogleAuthUtil;
 import com.google.android.gms.common.AccountPicker;
 import com.jb.dailyplay.R;
+import com.jb.dailyplay.alarmreceiver.DailyPlayAlarmReceiver;
 import com.jb.dailyplay.listeners.ProgressUpdateListener;
 import com.jb.dailyplay.managers.DailyMusicManager;
 import com.jb.dailyplay.utils.ConnectionUtils;
@@ -25,6 +26,7 @@ public class MainActivity extends Activity {
     private String mAccountName;
     private String mAuthToken;
     private TextView mUpdateTextView;
+    private DailyPlayAlarmReceiver mAlarm = new DailyPlayAlarmReceiver();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -33,7 +35,8 @@ public class MainActivity extends Activity {
         SharedPref.initSharedPref(this, getResources().getString(R.string.app_name));
         mUpdateTextView = (TextView) findViewById(R.id.update);
 
-        new GetDailyPlayMusicTask().execute();
+//        new GetDailyPlayMusicTask().execute();
+        mAlarm.setAlarm(this);
 
     }
 

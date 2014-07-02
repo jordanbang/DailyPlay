@@ -39,8 +39,10 @@ public class DailyMusicManager {
 
     private static final String LAST_SONG_LIST_SYNC = "last_sync";
     private static final String SONG_LIST = "song_list";
+    private static final String DOWNLOADED_SONG_LIST = "downloaded_song_list";
     private static final long ONE_WEEK = DateUtils.WEEK_IN_MILLIS;
     private static final Type LIST_OF_SONGS_TYPE = new TypeToken<Collection<Song>>(){}.getType();
+    private static final Type LIST_OF_DOWNLOADED_SONGS_TYPE = new TypeToken<Collection<SongFile>>(){}.getType();
     private static final long MEGABYTE = 1024L;
     private static final long TEN_MEGABYTES = 10*MEGABYTE;
 
@@ -140,6 +142,7 @@ public class DailyMusicManager {
             return;
         }
 
+
         if (mSongList == null || mSongList.size() == 0) {
             Log.i("DailyMusicManager", "Downloading song list");
             listener.updateProgress("Downloading song list");
@@ -147,6 +150,7 @@ public class DailyMusicManager {
             Log.i("DailyMusicManager", "Downloading song list complete");
             listener.updateProgress("Downloaded song list");
         }
+        deleteOldDailyPlayList();
         List<Integer> randomNumbers = getRandomNumbers(number);
         Log.i("DailyMusicManager", "Getting random numbers");
         listener.updateProgress("Getting random list of songs");
@@ -157,6 +161,7 @@ public class DailyMusicManager {
             mDownloadedFiles = mApi.downloadSongs(downloadList, context);
             Log.i("DailyMusicManager", "Songs downloaded");
             listener.updateProgress("Songs downloaded");
+            saveDailyPlayList();
             addFilesToMusicList(mDownloadedFiles, context);
             Log.i("ALL DONE !!!", "");
         } catch (Exception e) {
@@ -197,5 +202,29 @@ public class DailyMusicManager {
         long freeSpace = musicSaveFolder.getFreeSpace();
         long requiredSpace = numberOfSongs * TEN_MEGABYTES;
         return freeSpace > requiredSpace;
+    }
+
+    private void saveDailyPlayList() {
+        if (mDownloadedFiles == null) {
+            return;
+        }
+
+        Gson gson = new Gson();
+        SharedPref.setString(DOWNLOADED_SONG_LIST, gson.toJson(mSongList, LIST_OF_DOWNLOADED_SONGS_TYPE));
+    }
+
+    private void deleteOldDailyPlayList() {
+        String oldDailyPlayList = SharedPref.getString(DOWNLOADED_SONG_LIST);
+        if (StringUtils.isEmptyString(oldDailyPlayList)) {
+            return;
+        }
+
+        Gson gson = new Gson();
+        mDownloadedFiles = gson.fromJson(oldDailyPlayList, LIST_OF_DOWNLOADED_SONGS_TYPE);
+        for(SongFile downloadedFile : mDownloadedFiles) {
+            File file = downloadedFile.getFile();
+            file.delete();
+        }
+        SharedPref.setString(DOWNLOADED_SONG_LIST, "");
     }
 }
