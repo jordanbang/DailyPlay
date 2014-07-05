@@ -9,6 +9,7 @@ import android.support.v4.app.NotificationCompat;
 
 import com.jb.dailyplay.R;
 import com.jb.dailyplay.activities.MainActivity;
+import com.jb.dailyplay.managers.DailyMusicManager;
 
 /**
  * Created by Jordan on 6/30/2014.
@@ -25,7 +26,9 @@ public class DailyPlayScheduledService extends IntentService{
 
     @Override
     protected void onHandleIntent(Intent intent) {
-        //this is where the work gets done
+        DailyMusicManager dailyMusicManager = new DailyMusicManager();
+        dailyMusicManager.login("george.doe231@gmail.com", "GgfoDPxNSVH0Aqwx8MIt");
+        dailyMusicManager.getDailyPlayMusic(5, this, null);
 
         sendNotification();
         DailyPlayAlarmReceiver.completeWakefulIntent(intent);

@@ -76,7 +76,7 @@ public class DailyMusicManager {
         return songs;
     }
 
-    private void addFilesToMusicList(Collection<SongFile> downloadFiles, Context context) {
+    private void scanMeidaFiles(Collection<SongFile> downloadFiles, Context context) {
         for (SongFile file : downloadFiles) {
             MediaScannerConnection.scanFile(context, new String[]{file.getFile().getPath()}, new String[]{"audio/mpeg"}, new MediaScannerConnection.OnScanCompletedListener() {
                 @Override
@@ -111,7 +111,7 @@ public class DailyMusicManager {
     }
 
     /*Below calls are synchronous, need to be run on a background thread*/
-    public void loadSongList() {
+    private void loadSongList() {
             if (songListIsOutDated()) {
                 downloadSongList();
             } else {
@@ -133,40 +133,33 @@ public class DailyMusicManager {
 
     public void getDailyPlayMusic(int number, Context context, ProgressUpdateListener listener) {
         if (!ConnectionUtils.isConnectedWifi(context)) {
-            listener.updateProgress("Your device is not connected to Wi-fi.  Please connect to wi-fi to continue using DailyPlay.");
+            updateListener("Your device is not connected to Wi-fi.  Please connect to wi-fi to continue using DailyPlay.", listener);
             return;
         }
 
         if (!isFreeSpace(number)) {
-            listener.updateProgress("Not enough space available to download the requested number of songs");
+            updateListener("Not enough space available to download the requested number of songs", listener);
             return;
         }
 
-
         if (mSongList == null || mSongList.size() == 0) {
-            Log.i("DailyMusicManager", "Downloading song list");
-            listener.updateProgress("Downloading song list");
+            updateListener("Downloading song list", listener);
             loadSongList();
-            Log.i("DailyMusicManager", "Downloading song list complete");
-            listener.updateProgress("Downloaded song list");
+            updateListener("Downloaded song list", listener);
         }
-        deleteOldDailyPlayList();
+        deleteOldDailyPlayList(context);
         List<Integer> randomNumbers = getRandomNumbers(number);
-        Log.i("DailyMusicManager", "Getting random numbers");
-        listener.updateProgress("Getting random list of songs");
+        updateListener("Getting random list of songs", listener);
         Collection<Song> downloadList = getSongForRandomIndices(randomNumbers);
         try {
-            Log.i("DailyMusicManager", "Starting to download songs");
-            listener.updateProgress("Starting to download songs");
+            updateListener("Starting to download songs", listener);
             mDownloadedFiles = mApi.downloadSongs(downloadList, context);
-            Log.i("DailyMusicManager", "Songs downloaded");
-            listener.updateProgress("Songs downloaded");
+            updateListener("Songs downloaded", listener);
             saveDailyPlayList();
-            addFilesToMusicList(mDownloadedFiles, context);
-            Log.i("ALL DONE !!!", "");
+            scanMeidaFiles(mDownloadedFiles, context);
         } catch (Exception e) {
-            Log.e("Download files failed", e.getMessage());
-            listener.updateProgress("A problem has occurred, please try again later");
+            Log.e("Music Manager", e.getMessage());
+            updateListener("A problem has occurred, please try again later", listener);
         }
     }
 
@@ -210,21 +203,35 @@ public class DailyMusicManager {
         }
 
         Gson gson = new Gson();
-        SharedPref.setString(DOWNLOADED_SONG_LIST, gson.toJson(mSongList, LIST_OF_DOWNLOADED_SONGS_TYPE));
+        SharedPref.setString(DOWNLOADED_SONG_LIST, gson.toJson(mDownloadedFiles, LIST_OF_DOWNLOADED_SONGS_TYPE));
     }
 
-    private void deleteOldDailyPlayList() {
+    private void deleteOldDailyPlayList(Context context) {
         String oldDailyPlayList = SharedPref.getString(DOWNLOADED_SONG_LIST);
         if (StringUtils.isEmptyString(oldDailyPlayList)) {
             return;
         }
 
         Gson gson = new Gson();
-        mDownloadedFiles = gson.fromJson(oldDailyPlayList, LIST_OF_DOWNLOADED_SONGS_TYPE);
-        for(SongFile downloadedFile : mDownloadedFiles) {
+        Collection<SongFile> downloadedFiles = null;
+        try {
+            downloadedFiles = gson.fromJson(oldDailyPlayList, LIST_OF_DOWNLOADED_SONGS_TYPE);
+        } catch(Exception e) {
+            Log.e("Music Manager", e.getMessage());
+        }
+        for(SongFile downloadedFile : downloadedFiles) {
             File file = downloadedFile.getFile();
             file.delete();
         }
         SharedPref.setString(DOWNLOADED_SONG_LIST, "");
+        scanMeidaFiles(downloadedFiles, context);
+    }
+
+    private void updateListener(String text, ProgressUpdateListener listener) {
+        if (listener == null) {
+            return;
+        }
+        Log.i("Music Manager", text);
+        listener.updateProgress(text);
     }
 }

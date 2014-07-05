@@ -11,9 +11,9 @@ import java.io.File;
  */
 public class SongFile extends Object {
     private File mFile;
-    private Tune mSong;
+    private Song mSong;
 
-    public SongFile(File file, Tune song) {
+    public SongFile(File file, Song song) {
         mFile = file;
         mSong = song;
     }
@@ -26,7 +26,7 @@ public class SongFile extends Object {
         return mFile;
     }
 
-    public void setSong(Tune song) {
+    public void setSong(Song song) {
         mSong = song;
     }
 

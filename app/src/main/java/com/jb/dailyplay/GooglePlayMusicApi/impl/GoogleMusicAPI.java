@@ -20,6 +20,7 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonParser;
 import com.jb.dailyplay.GooglePlayMusicApi.comm.FormBuilder;
+import com.jb.dailyplay.GooglePlayMusicApi.comm.HttpUrlConnector;
 import com.jb.dailyplay.GooglePlayMusicApi.comm.JSON;
 import com.jb.dailyplay.GooglePlayMusicApi.interfaces.IGoogleHttpClient;
 import com.jb.dailyplay.GooglePlayMusicApi.interfaces.IGoogleMusicAPI;
@@ -32,16 +33,11 @@ import com.jb.dailyplay.GooglePlayMusicApi.model.QueryResponse;
 import com.jb.dailyplay.GooglePlayMusicApi.model.Song;
 import com.jb.dailyplay.GooglePlayMusicApi.model.SongUrl;
 import com.jb.dailyplay.GooglePlayMusicApi.model.Tune;
-import com.jb.dailyplay.GooglePlayMusicApi.comm.HttpUrlConnector;
 import com.jb.dailyplay.models.SongFile;
 import com.mpatric.mp3agic.ID3v1;
 import com.mpatric.mp3agic.ID3v1Tag;
-import com.mpatric.mp3agic.ID3v2;
-import com.mpatric.mp3agic.ID3v22Tag;
 import com.mpatric.mp3agic.InvalidDataException;
 import com.mpatric.mp3agic.Mp3File;
-import com.mpatric.mp3agic.NotSupportedException;
-import com.mpatric.mp3agic.UnsupportedTagException;
 
 import java.io.BufferedInputStream;
 import java.io.File;
@@ -279,7 +275,7 @@ public class GoogleMusicAPI implements IGoogleMusicAPI {
 
         File retFile = new File(fullPath);
         if (retFile.exists()) {
-            return new SongFile(retFile, song);
+            return new SongFile(retFile, (Song) song);
         }
 
         String fullTempPath = context.getFilesDir().getPath() + "/" + TEMP;
@@ -315,7 +311,7 @@ public class GoogleMusicAPI implements IGoogleMusicAPI {
         }
 
 
-        return new SongFile(retFile, song);
+        return new SongFile(retFile, (Song) song);
 
     }
 

@@ -35,8 +35,8 @@ public class MainActivity extends Activity {
         SharedPref.initSharedPref(this, getResources().getString(R.string.app_name));
         mUpdateTextView = (TextView) findViewById(R.id.update);
 
-//        new GetDailyPlayMusicTask().execute();
-        mAlarm.setAlarm(this);
+        new GetDailyPlayMusicTask().execute();
+//        mAlarm.setAlarm(this);
 
     }
 
@@ -95,7 +95,7 @@ public class MainActivity extends Activity {
 
         @Override
         protected Void doInBackground(Void... voids) {
-            String password = "***REMOVED***";
+            String password = "GgfoDPxNSVH0Aqwx8MIt";
             String username = "george.doe231@gmail.com";
             mDailyMusicManager = new DailyMusicManager();
             mDailyMusicManager.login(username, password);
