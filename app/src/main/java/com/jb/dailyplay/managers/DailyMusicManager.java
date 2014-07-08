@@ -16,9 +16,6 @@ import com.jb.dailyplay.models.SongFile;
 import com.jb.dailyplay.utils.ConnectionUtils;
 import com.jb.dailyplay.utils.SharedPref;
 import com.jb.dailyplay.utils.StringUtils;
-import com.mpatric.mp3agic.ID3v2;
-import com.mpatric.mp3agic.ID3v22Tag;
-import com.mpatric.mp3agic.Mp3File;
 
 import java.io.File;
 import java.lang.reflect.Type;
@@ -41,17 +38,11 @@ public class DailyMusicManager {
     private static final String SONG_LIST = "song_list";
     private static final String DOWNLOADED_SONG_LIST = "downloaded_song_list";
     private static final long ONE_WEEK = DateUtils.WEEK_IN_MILLIS;
-    private static final Type LIST_OF_SONGS_TYPE = new TypeToken<Collection<Song>>(){}.getType();
-    private static final Type LIST_OF_DOWNLOADED_SONGS_TYPE = new TypeToken<Collection<SongFile>>(){}.getType();
     private static final long MEGABYTE = 1024L;
     private static final long TEN_MEGABYTES = 10*MEGABYTE;
 
     public DailyMusicManager() {
         mApi = new GoogleMusicAPI();
-    }
-
-    public Collection<Song> getSongList() {
-        return mSongList;
     }
 
     private ArrayList<Integer> getRandomNumbers(int number) {
@@ -76,7 +67,7 @@ public class DailyMusicManager {
         return songs;
     }
 
-    private void scanMeidaFiles(Collection<SongFile> downloadFiles, Context context) {
+    private void scanMediaFiles(Collection<SongFile> downloadFiles, Context context) {
         for (SongFile file : downloadFiles) {
             MediaScannerConnection.scanFile(context, new String[]{file.getFile().getPath()}, new String[]{"audio/mpeg"}, new MediaScannerConnection.OnScanCompletedListener() {
                 @Override
@@ -85,28 +76,6 @@ public class DailyMusicManager {
                     Log.i("External Storage", "Uri " + uri);
                 }
             });
-        }
-    }
-
-    private void createMp3TagsForFiles(Collection<SongFile> files) {
-        ArrayList<Mp3File> mp3Files = new ArrayList<Mp3File>();
-        for (SongFile songFile : files) {
-            File file = songFile.getFile();
-            Song song = (Song) songFile.getSong();
-            try {
-                Mp3File mp3File = new Mp3File(file.getPath());
-                if (!mp3File.hasId3v2Tag()) {
-                    ID3v2 tags = new ID3v22Tag();
-                    mp3File.setId3v2Tag(tags);
-                    tags.setArtist(song.getArtist());
-                    tags.setAlbum(song.getAlbum());
-                    tags.setTitle(song.getTitle());
-                    mp3File.save(file.getPath());
-                }
-                mp3Files.add(mp3File);
-            } catch (Exception e) {
-                Log.e("Tagging song: " + file.getPath() + " failed", e.getMessage() + e.getClass().toString());
-            }
         }
     }
 
@@ -125,7 +94,7 @@ public class DailyMusicManager {
             mSongCount = mSongList.size();
             SharedPref.setLong(LAST_SONG_LIST_SYNC, System.currentTimeMillis());
             Gson gson = new Gson();
-            SharedPref.setString(SONG_LIST, gson.toJson(mSongList, LIST_OF_SONGS_TYPE));
+            SharedPref.setString(SONG_LIST, gson.toJson(mSongList));
         } catch (Exception e) {
             Log.e("Get All Songs error", e.getMessage());
         }
@@ -156,7 +125,7 @@ public class DailyMusicManager {
             mDownloadedFiles = mApi.downloadSongs(downloadList, context);
             updateListener("Songs downloaded", listener);
             saveDailyPlayList();
-            scanMeidaFiles(mDownloadedFiles, context);
+            scanMediaFiles(mDownloadedFiles, context);
         } catch (Exception e) {
             Log.e("Music Manager", e.getMessage());
             updateListener("A problem has occurred, please try again later", listener);
@@ -177,7 +146,8 @@ public class DailyMusicManager {
             downloadSongList();
         } else {
             Gson gson = new Gson();
-            mSongList = gson.fromJson(songListAsString, LIST_OF_SONGS_TYPE);
+            Type type = new TypeToken<Collection<Song>>(){}.getType();
+            mSongList = gson.fromJson(songListAsString, type);
             mSongCount = mSongList.size();
         }
 
@@ -203,7 +173,7 @@ public class DailyMusicManager {
         }
 
         Gson gson = new Gson();
-        SharedPref.setString(DOWNLOADED_SONG_LIST, gson.toJson(mDownloadedFiles, LIST_OF_DOWNLOADED_SONGS_TYPE));
+        SharedPref.setString(DOWNLOADED_SONG_LIST, gson.toJson(mDownloadedFiles));
     }
 
     private void deleteOldDailyPlayList(Context context) {
@@ -215,7 +185,8 @@ public class DailyMusicManager {
         Gson gson = new Gson();
         Collection<SongFile> downloadedFiles = null;
         try {
-            downloadedFiles = gson.fromJson(oldDailyPlayList, LIST_OF_DOWNLOADED_SONGS_TYPE);
+            Type type = new TypeToken<Collection<SongFile>>(){}.getType();
+            downloadedFiles = gson.fromJson(oldDailyPlayList, type);
         } catch(Exception e) {
             Log.e("Music Manager", e.getMessage());
         }
@@ -224,7 +195,7 @@ public class DailyMusicManager {
             file.delete();
         }
         SharedPref.setString(DOWNLOADED_SONG_LIST, "");
-        scanMeidaFiles(downloadedFiles, context);
+        scanMediaFiles(downloadedFiles, context);
     }
 
     private void updateListener(String text, ProgressUpdateListener listener) {

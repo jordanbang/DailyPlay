@@ -35,8 +35,8 @@ public class MainActivity extends Activity {
         SharedPref.initSharedPref(this, getResources().getString(R.string.app_name));
         mUpdateTextView = (TextView) findViewById(R.id.update);
 
-        new GetDailyPlayMusicTask().execute();
-//        mAlarm.setAlarm(this);
+//        new GetDailyPlayMusicTask().execute();
+        mAlarm.setAlarm(this);
 
     }
 
