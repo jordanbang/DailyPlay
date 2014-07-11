@@ -40,12 +40,13 @@ public class DailyPlayScheduledService extends IntentService{
             sendNotification("Songs successfully downloaded.  Enjoy your new DailyPlay list!");
         } catch(NoWifiException e) {
             Log.e(e);
-            sendNotification("Your device was not connected to Wifi and we were unable to download a new DailyPlay list.");
+            sendNotification("Your device was not connected to Wifi. We were unable to download a new DailyPlay list.");
         } catch(NoSpaceException e) {
             Log.e(e);
             sendNotification("Not enough space to download a new DailyPlay list");
         } catch (Exception e) {
             Log.e(e);
+            sendNotification("An error occurred while trying to download your DailyPlay list.");
         }
 
         Date date = new Date(System.currentTimeMillis());

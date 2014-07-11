@@ -33,10 +33,10 @@ public class DailyPlayAlarmReceiver extends WakefulBroadcastReceiver {
 
         Calendar calendar = Calendar.getInstance();
         calendar.setTimeInMillis(System.currentTimeMillis());
-        calendar.set(Calendar.HOUR_OF_DAY, 20);
+        calendar.set(Calendar.HOUR_OF_DAY, 2);
 //        calendar.set(Calendar.MINUTE, 0);
 
-        mAlarmManager.setInexactRepeating(AlarmManager.RTC_WAKEUP, calendar.getTimeInMillis(), AlarmManager.INTERVAL_FIFTEEN_MINUTES, mAlarmIntent);
+        mAlarmManager.setInexactRepeating(AlarmManager.RTC_WAKEUP, calendar.getTimeInMillis(), AlarmManager.INTERVAL_DAY, mAlarmIntent);
 
         ComponentName receiver = new ComponentName(context, DailyPlayBootReceiver.class);
         PackageManager packageManager = context.getPackageManager();
