@@ -9,7 +9,14 @@ import android.support.v4.app.NotificationCompat;
 
 import com.jb.dailyplay.R;
 import com.jb.dailyplay.activities.MainActivity;
+import com.jb.dailyplay.exceptions.NoSpaceException;
+import com.jb.dailyplay.exceptions.NoWifiException;
 import com.jb.dailyplay.managers.DailyMusicManager;
+import com.noveogroup.android.log.Log;
+
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 
 /**
  * Created by Jordan on 6/30/2014.
@@ -27,15 +34,27 @@ public class DailyPlayScheduledService extends IntentService{
     @Override
     protected void onHandleIntent(Intent intent) {
         DailyMusicManager dailyMusicManager = new DailyMusicManager();
-        dailyMusicManager.login("george.doe231@gmail.com", "GgfoDPxNSVH0Aqwx8MIt");
-        dailyMusicManager.getDailyPlayMusic(5, this, null);
+        dailyMusicManager.login("george.doe231@gmail.com", "***REMOVED***");
+        try {
+            dailyMusicManager.getDailyPlayMusic(5, this);
+            sendNotification("Songs successfully downloaded.  Enjoy your new DailyPlay list!");
+        } catch(NoWifiException e) {
+            Log.e(e);
+            sendNotification("Your device was not connected to Wifi and we were unable to download a new DailyPlay list.");
+        } catch(NoSpaceException e) {
+            Log.e(e);
+            sendNotification("Not enough space to download a new DailyPlay list");
+        } catch (Exception e) {
+            Log.e(e);
+        }
 
-        sendNotification();
+        Date date = new Date(System.currentTimeMillis());
+        DateFormat format = new SimpleDateFormat("HH:mm:ss");
+        Log.i("Daily Play List downloaded at " + format.format(date));
         DailyPlayAlarmReceiver.completeWakefulIntent(intent);
     }
 
-    private void sendNotification() {
-        String message = "Songs successfully downloaded.  Enjoy your new DailyPlay list!";
+    private void sendNotification(String message) {
         mNotificationManager = (NotificationManager) this.getSystemService(Context.NOTIFICATION_SERVICE);
         PendingIntent contentIntent = PendingIntent.getActivity(this, 0, new Intent(this, MainActivity.class), 0);
         NotificationCompat.Builder builder = new NotificationCompat.Builder(this);

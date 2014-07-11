@@ -8,6 +8,8 @@ import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.support.v4.content.WakefulBroadcastReceiver;
 
+import com.noveogroup.android.log.Log;
+
 import java.util.Calendar;
 
 /**
@@ -24,16 +26,17 @@ public class DailyPlayAlarmReceiver extends WakefulBroadcastReceiver {
     }
 
     public void setAlarm(Context context) {
+        Log.i("Alarm being set");
         mAlarmManager = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
         Intent intent = new Intent(context, DailyPlayAlarmReceiver.class);
         mAlarmIntent = PendingIntent.getBroadcast(context, 0, intent, 0);
 
         Calendar calendar = Calendar.getInstance();
         calendar.setTimeInMillis(System.currentTimeMillis());
-        calendar.set(Calendar.HOUR_OF_DAY, 15);
-        calendar.set(Calendar.MINUTE, 33);
+        calendar.set(Calendar.HOUR_OF_DAY, 20);
+//        calendar.set(Calendar.MINUTE, 0);
 
-        mAlarmManager.setInexactRepeating(AlarmManager.RTC_WAKEUP, calendar.getTimeInMillis(), AlarmManager.INTERVAL_DAY, mAlarmIntent);
+        mAlarmManager.setInexactRepeating(AlarmManager.RTC_WAKEUP, calendar.getTimeInMillis(), AlarmManager.INTERVAL_FIFTEEN_MINUTES, mAlarmIntent);
 
         ComponentName receiver = new ComponentName(context, DailyPlayBootReceiver.class);
         PackageManager packageManager = context.getPackageManager();

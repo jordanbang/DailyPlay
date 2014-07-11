@@ -6,26 +6,32 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.widget.ListView;
 import android.widget.TextView;
 
 import com.google.android.gms.auth.GoogleAuthUtil;
 import com.google.android.gms.common.AccountPicker;
 import com.jb.dailyplay.R;
+import com.jb.dailyplay.adapters.SongListAdapter;
 import com.jb.dailyplay.alarmreceiver.DailyPlayAlarmReceiver;
-import com.jb.dailyplay.listeners.ProgressUpdateListener;
 import com.jb.dailyplay.managers.DailyMusicManager;
+import com.jb.dailyplay.models.SongFile;
 import com.jb.dailyplay.utils.ConnectionUtils;
 import com.jb.dailyplay.utils.SharedPref;
 
+import java.util.Collection;
+
 
 public class MainActivity extends Activity {
-    private DailyMusicManager mDailyMusicManager;
+    private DailyMusicManager mDailyMusicManager = new DailyMusicManager();
+
     private static final int PICK_ACCOUNT_REQUEST = 0;
     private static final String mScope = "";
     private static final String TAG = "MainActivity";
     private String mAccountName;
     private String mAuthToken;
     private TextView mUpdateTextView;
+    private ListView mListView;
     private DailyPlayAlarmReceiver mAlarm = new DailyPlayAlarmReceiver();
 
     @Override
@@ -35,9 +41,9 @@ public class MainActivity extends Activity {
         SharedPref.initSharedPref(this, getResources().getString(R.string.app_name));
         mUpdateTextView = (TextView) findViewById(R.id.update);
 
-//        new GetDailyPlayMusicTask().execute();
+        mListView = (ListView) findViewById(R.id.song_list);
+        updateListView();
         mAlarm.setAlarm(this);
-
     }
 
     public void chooseGoogleAccount() {
@@ -85,7 +91,21 @@ public class MainActivity extends Activity {
         }
     }
 
-    public class GetDailyPlayMusicTask extends AsyncTask<Void, String, Void> implements ProgressUpdateListener {
+    private void updateListView() {
+        Collection<SongFile> downloadedSongs = mDailyMusicManager.getDownloadedSongs();
+        if (downloadedSongs == null) {
+            return;
+        }
+
+        if (mListView.getAdapter() == null) {
+            mListView.setAdapter(new SongListAdapter(this, downloadedSongs));
+        } else {
+            SongListAdapter adapter = (SongListAdapter) mListView.getAdapter();
+            adapter.notifyDataSetChanged(downloadedSongs);
+        }
+    }
+
+    public class GetDailyPlayMusicTask extends AsyncTask<Void, String, Void> {
 
         @Override
         protected void onPreExecute() {
@@ -100,7 +120,7 @@ public class MainActivity extends Activity {
             mDailyMusicManager = new DailyMusicManager();
             mDailyMusicManager.login(username, password);
             publishProgress("Completed login");
-            mDailyMusicManager.getDailyPlayMusic(5, getBaseContext(), this);
+//            mDailyMusicManager.getDailyPlayMusic(5, getBaseContext(), this);
             return null;
         }
 
@@ -111,8 +131,9 @@ public class MainActivity extends Activity {
         }
 
         @Override
-        public void updateProgress(String... strings) {
-            publishProgress(strings);
+        protected void onPostExecute(Void aVoid) {
+            super.onPostExecute(aVoid);
+            updateListView();
         }
     }
 }

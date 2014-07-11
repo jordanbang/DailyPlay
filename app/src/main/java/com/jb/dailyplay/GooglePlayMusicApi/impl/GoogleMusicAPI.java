@@ -12,7 +12,6 @@ package com.jb.dailyplay.GooglePlayMusicApi.impl;
 
 import android.content.Context;
 import android.os.Environment;
-import android.util.Log;
 
 import com.google.common.base.Strings;
 import com.google.gson.Gson;
@@ -38,6 +37,7 @@ import com.mpatric.mp3agic.ID3v1;
 import com.mpatric.mp3agic.ID3v1Tag;
 import com.mpatric.mp3agic.InvalidDataException;
 import com.mpatric.mp3agic.Mp3File;
+import com.noveogroup.android.log.Log;
 
 import java.io.BufferedInputStream;
 import java.io.File;
@@ -152,7 +152,7 @@ public class GoogleMusicAPI implements IGoogleMusicAPI {
                 if (!Strings.isNullOrEmpty(gson.fromJson(values.get(36), String.class))) {
                     s.setUrl("https:" + gson.fromJson(values.get(36), String.class));
                 }
-                Log.i("GoogleMusicApi", "Added song: " + s.getName());
+                Log.i("Added song: " + s.getName());
                 chunkedCollection.add(s);
             }
         }
