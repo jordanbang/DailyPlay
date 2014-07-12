@@ -12,6 +12,7 @@ import com.jb.dailyplay.activities.MainActivity;
 import com.jb.dailyplay.exceptions.NoSpaceException;
 import com.jb.dailyplay.exceptions.NoWifiException;
 import com.jb.dailyplay.managers.DailyMusicManager;
+import com.jb.dailyplay.utils.LogUtils;
 import com.noveogroup.android.log.Log;
 
 import java.text.DateFormat;
@@ -46,6 +47,7 @@ public class DailyPlayScheduledService extends IntentService{
             sendNotification("Not enough space to download a new DailyPlay list");
         } catch (Exception e) {
             Log.e(e);
+            LogUtils.appendLog(e);
             sendNotification("An error occurred while trying to download your DailyPlay list.");
         }
 

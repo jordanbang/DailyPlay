@@ -17,6 +17,7 @@ import com.jb.dailyplay.alarmreceiver.DailyPlayAlarmReceiver;
 import com.jb.dailyplay.managers.DailyMusicManager;
 import com.jb.dailyplay.models.SongFile;
 import com.jb.dailyplay.utils.ConnectionUtils;
+import com.jb.dailyplay.utils.LogUtils;
 import com.jb.dailyplay.utils.SharedPref;
 
 import java.util.Collection;
@@ -44,6 +45,7 @@ public class MainActivity extends Activity {
         mListView = (ListView) findViewById(R.id.song_list);
         updateListView();
         mAlarm.setAlarm(this);
+        LogUtils.appendLog("App boot @ " + System.currentTimeMillis());
     }
 
     public void chooseGoogleAccount() {
