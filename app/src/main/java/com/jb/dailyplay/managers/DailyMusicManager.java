@@ -10,11 +10,13 @@ import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 import com.jb.dailyplay.GooglePlayMusicApi.impl.GoogleMusicAPI;
 import com.jb.dailyplay.GooglePlayMusicApi.model.Song;
+import com.jb.dailyplay.activities.SettingsActivity;
 import com.jb.dailyplay.exceptions.NoSpaceException;
 import com.jb.dailyplay.exceptions.NoWifiException;
 import com.jb.dailyplay.models.SongFile;
 import com.jb.dailyplay.utils.ConnectionUtils;
 import com.jb.dailyplay.utils.SharedPref;
+import com.jb.dailyplay.utils.SharedPrefConstants;
 import com.jb.dailyplay.utils.StringUtils;
 import com.noveogroup.android.log.Log;
 
@@ -37,14 +39,18 @@ public class DailyMusicManager {
     private Collection<SongFile> mDownloadedFiles;
     private int mSongCount = 0;
 
-    private static final String TAG = "DailyMusicManager";
-    private static final String LAST_SONG_LIST_SYNC = "last_sync";
-    private static final String SONG_LIST = "song_list";
-    private static final String DOWNLOADED_SONG_LIST = "downloaded_song_list";
     private static final long ONE_WEEK = DateUtils.WEEK_IN_MILLIS;
     private static final long MEGABYTE = 1024L;
+    private static DailyMusicManager mInstance;
 
-    public DailyMusicManager() {
+    public static DailyMusicManager getInstance() {
+        if (mInstance == null) {
+            mInstance = new DailyMusicManager();
+        }
+        return mInstance;
+    }
+
+    private DailyMusicManager() {
         mApi = new GoogleMusicAPI();
     }
 
@@ -83,6 +89,48 @@ public class DailyMusicManager {
 
     }
 
+    private void deleteOldDailyPlayList(Context context) {
+        String oldDailyPlayList = SharedPref.getString(SharedPrefConstants.DOWNLOADED_SONG_LIST);
+        if (StringUtils.isEmptyString(oldDailyPlayList)) {
+            return;
+        }
+
+        Gson gson = new Gson();
+        Collection<SongFile> downloadedFiles = null;
+        Type type = new TypeToken<Collection<SongFile>>(){}.getType();
+        downloadedFiles = gson.fromJson(oldDailyPlayList, type);
+        for(SongFile downloadedFile : downloadedFiles) {
+            File file = downloadedFile.getFile();
+            file.delete();
+            Log.i("Deleting file: " + file.getName());
+        }
+        SharedPref.setString(SharedPrefConstants.DOWNLOADED_SONG_LIST, "");
+        scanMediaFiles(downloadedFiles, context);
+    }
+
+    private void getDownloadedFilesFromSharedPref() {
+        String oldDailyPlayList = SharedPref.getString(SharedPrefConstants.DOWNLOADED_SONG_LIST);
+        if (StringUtils.isEmptyString(oldDailyPlayList)) {
+            return;
+        }
+
+        Gson gson = new Gson();
+        Collection<SongFile> downloadedFiles = null;
+        Type type = new TypeToken<Collection<SongFile>>(){}.getType();
+        downloadedFiles = gson.fromJson(oldDailyPlayList, type);
+        mDownloadedFiles = downloadedFiles;
+    }
+
+    public Collection<SongFile> getDownloadedSongs() {
+        return mDownloadedFiles;
+    }
+
+    public void saveDownloadOption(int downloadOption) {
+        SharedPref.setInt(SharedPrefConstants.DOWNLOAD_OPTION,
+                downloadOption == SettingsActivity.DownloadOptions.SONGS ?
+                SharedPrefConstants.DOWNLOAD_BY_NUMBER : SharedPrefConstants.DOWNLOAD_BY_TIME);
+    }
+
     /*Below calls are synchronous, need to be run on a background thread*/
     private void loadSongList() throws IOException, URISyntaxException {
             if (songListIsOutDated()) {
@@ -95,9 +143,9 @@ public class DailyMusicManager {
     private void downloadSongList() throws IOException, URISyntaxException {
         mSongList = mApi.getAllSongs();
         mSongCount = mSongList.size();
-        SharedPref.setLong(LAST_SONG_LIST_SYNC, System.currentTimeMillis());
+        SharedPref.setLong(SharedPrefConstants.LAST_SONG_LIST_SYNC, System.currentTimeMillis());
         Gson gson = new Gson();
-        SharedPref.setString(SONG_LIST, gson.toJson(mSongList));
+        SharedPref.setString(SharedPrefConstants.SONG_LIST, gson.toJson(mSongList));
     }
 
     public void getDailyPlayMusic(int number, Context context) throws Exception {
@@ -135,7 +183,7 @@ public class DailyMusicManager {
     }
 
     private void loadSongListFromSharedPref() throws IOException, URISyntaxException {
-        String songListAsString = SharedPref.getString(SONG_LIST);
+        String songListAsString = SharedPref.getString(SharedPrefConstants.SONG_LIST);
         if (StringUtils.isEmptyString(songListAsString)) {
             downloadSongList();
         } else {
@@ -147,10 +195,9 @@ public class DailyMusicManager {
 
     }
 
-    /*Below calls don't need to be asynchronous*/
     private boolean songListIsOutDated() {
         long currentTime = System.currentTimeMillis();
-        long lastSync = SharedPref.getLong(LAST_SONG_LIST_SYNC, 0);
+        long lastSync = SharedPref.getLong(SharedPrefConstants.LAST_SONG_LIST_SYNC, 0);
         return (currentTime - lastSync) > ONE_WEEK;
     }
 
@@ -167,42 +214,6 @@ public class DailyMusicManager {
         }
 
         Gson gson = new Gson();
-        SharedPref.setString(DOWNLOADED_SONG_LIST, gson.toJson(mDownloadedFiles));
-    }
-
-    private void deleteOldDailyPlayList(Context context) {
-        String oldDailyPlayList = SharedPref.getString(DOWNLOADED_SONG_LIST);
-        if (StringUtils.isEmptyString(oldDailyPlayList)) {
-            return;
-        }
-
-        Gson gson = new Gson();
-        Collection<SongFile> downloadedFiles = null;
-        Type type = new TypeToken<Collection<SongFile>>(){}.getType();
-        downloadedFiles = gson.fromJson(oldDailyPlayList, type);
-        for(SongFile downloadedFile : downloadedFiles) {
-            File file = downloadedFile.getFile();
-            file.delete();
-            Log.i("Deleting file: " + file.getName());
-        }
-        SharedPref.setString(DOWNLOADED_SONG_LIST, "");
-        scanMediaFiles(downloadedFiles, context);
-    }
-
-    private void getDownloadedFilesFromSharedPref() {
-        String oldDailyPlayList = SharedPref.getString(DOWNLOADED_SONG_LIST);
-        if (StringUtils.isEmptyString(oldDailyPlayList)) {
-            return;
-        }
-
-        Gson gson = new Gson();
-        Collection<SongFile> downloadedFiles = null;
-        Type type = new TypeToken<Collection<SongFile>>(){}.getType();
-        downloadedFiles = gson.fromJson(oldDailyPlayList, type);
-        mDownloadedFiles = downloadedFiles;
-    }
-
-    public Collection<SongFile> getDownloadedSongs() {
-        return mDownloadedFiles;
+        SharedPref.setString(SharedPrefConstants.DOWNLOADED_SONG_LIST, gson.toJson(mDownloadedFiles));
     }
 }

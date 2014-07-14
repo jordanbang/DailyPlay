@@ -24,8 +24,6 @@ import java.util.Collection;
 
 
 public class MainActivity extends Activity {
-    private DailyMusicManager mDailyMusicManager = new DailyMusicManager();
-
     private static final int PICK_ACCOUNT_REQUEST = 0;
     private static final String mScope = "";
     private static final String TAG = "MainActivity";
@@ -94,7 +92,7 @@ public class MainActivity extends Activity {
     }
 
     private void updateListView() {
-        Collection<SongFile> downloadedSongs = mDailyMusicManager.getDownloadedSongs();
+        Collection<SongFile> downloadedSongs = DailyMusicManager.getInstance().getDownloadedSongs();
         if (downloadedSongs == null) {
             return;
         }
@@ -119,8 +117,7 @@ public class MainActivity extends Activity {
         protected Void doInBackground(Void... voids) {
             String password = "GgfoDPxNSVH0Aqwx8MIt";
             String username = "george.doe231@gmail.com";
-            mDailyMusicManager = new DailyMusicManager();
-            mDailyMusicManager.login(username, password);
+            DailyMusicManager.getInstance().login(username, password);
             publishProgress("Completed login");
 //            mDailyMusicManager.getDailyPlayMusic(5, getBaseContext(), this);
             return null;

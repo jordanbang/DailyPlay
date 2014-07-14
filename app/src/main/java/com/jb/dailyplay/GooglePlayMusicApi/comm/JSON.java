@@ -14,13 +14,11 @@ import com.google.gson.Gson;
 
 import com.jb.dailyplay.GooglePlayMusicApi.interfaces.IJsonDeserializer;
 
-public class JSON implements IJsonDeserializer
-{
+public class JSON implements IJsonDeserializer {
     private final Gson gson = new Gson();
 
     @Override
-    public <T> T deserialize(final String data, final Class<T> clazz)
-    {
+    public <T> T deserialize(final String data, final Class<T> clazz) {
         return gson.fromJson(data, clazz);
     }
 }

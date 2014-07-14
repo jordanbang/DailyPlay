@@ -24,7 +24,7 @@
             android:textAppearance="?android:attr/textAppearanceMedium"
             android:text="@string/text_number_songs_to_download"
             android:layout_weight="0.2"
-            android:id="@+id/textView"/>
+            android:id="@+id/text_number_of_songs"/>
 
         <EditText
             android:layout_width="match_parent"
@@ -53,7 +53,7 @@
             android:textAppearance="?android:attr/textAppearanceLarge"
             android:text="@string/text_length_of_playlist"
             android:layout_weight="0.2"
-            android:id="@+id/textView2"/>
+            android:id="@+id/text_length_of_list"/>
 
         <EditText
             android:layout_width="match_parent"
