@@ -34,7 +34,7 @@ public class DailyPlayScheduledService extends IntentService{
 
     @Override
     protected void onHandleIntent(Intent intent) {
-        DailyMusicManager dailyMusicManager = new DailyMusicManager();
+        DailyMusicManager dailyMusicManager = DailyMusicManager.getInstance();
         dailyMusicManager.login("george.doe231@gmail.com", "***REMOVED***");
         try {
             dailyMusicManager.getDailyPlayMusic(5, this);
