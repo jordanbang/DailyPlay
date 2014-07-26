@@ -2,10 +2,11 @@ package com.jb.dailyplay.activities;
 
 import android.app.Activity;
 import android.content.Intent;
-import android.os.AsyncTask;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
+import android.widget.Button;
 import android.widget.ListView;
 import android.widget.TextView;
 
@@ -16,7 +17,6 @@ import com.jb.dailyplay.adapters.SongListAdapter;
 import com.jb.dailyplay.alarmreceiver.DailyPlayAlarmReceiver;
 import com.jb.dailyplay.managers.DailyMusicManager;
 import com.jb.dailyplay.models.SongFile;
-import com.jb.dailyplay.utils.ConnectionUtils;
 import com.jb.dailyplay.utils.LogUtils;
 import com.jb.dailyplay.utils.SharedPref;
 
@@ -37,13 +37,21 @@ public class MainActivity extends Activity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        SharedPref.initSharedPref(this, getResources().getString(R.string.app_name));
+        SharedPref.initSharedPref(getApplication(), getResources().getString(R.string.app_name));
         mUpdateTextView = (TextView) findViewById(R.id.update);
 
         mListView = (ListView) findViewById(R.id.song_list);
         updateListView();
         mAlarm.setAlarm(this);
         LogUtils.appendLog("App boot @ " + System.currentTimeMillis());
+
+        Button button = (Button) findViewById(R.id.test);
+        button.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                test();
+            }
+        });
     }
 
     public void chooseGoogleAccount() {
@@ -83,14 +91,6 @@ public class MainActivity extends Activity {
 //        super.onActivityResult(requestCode, resultCode, data);
 //    }
 
-    private void getDailyPlayList() {
-        if (ConnectionUtils.isConnectedWifi(this)) {
-
-        } else {
-            mUpdateTextView.setText("Your device is not connected to Wi-fi.  Please connect to wi-fi to continue using DailyPlay.");
-        }
-    }
-
     private void updateListView() {
         Collection<SongFile> downloadedSongs = DailyMusicManager.getInstance().getDownloadedSongs();
         if (downloadedSongs == null) {
@@ -105,34 +105,7 @@ public class MainActivity extends Activity {
         }
     }
 
-    public class GetDailyPlayMusicTask extends AsyncTask<Void, String, Void> {
-
-        @Override
-        protected void onPreExecute() {
-            super.onPreExecute();
-            mUpdateTextView.setText("Starting to get DailyPlay list");
-        }
-
-        @Override
-        protected Void doInBackground(Void... voids) {
-            String password = "GgfoDPxNSVH0Aqwx8MIt";
-            String username = "george.doe231@gmail.com";
-            DailyMusicManager.getInstance().login(username, password);
-            publishProgress("Completed login");
-//            mDailyMusicManager.getDailyPlayMusic(5, getBaseContext(), this);
-            return null;
-        }
-
-        @Override
-        protected void onProgressUpdate(String... values) {
-            super.onProgressUpdate(values);
-            mUpdateTextView.setText(values[0]);
-        }
-
-        @Override
-        protected void onPostExecute(Void aVoid) {
-            super.onPostExecute(aVoid);
-            updateListView();
-        }
+    private void test() {
+        DailyMusicManager.getInstance().test();
     }
 }

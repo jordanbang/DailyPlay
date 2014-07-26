@@ -1,7 +1,7 @@
 package com.jb.dailyplay.utils;
 
 import android.annotation.SuppressLint;
-import android.app.Activity;
+import android.content.Context;
 import android.content.SharedPreferences;
 
 public class SharedPref {
@@ -9,7 +9,7 @@ public class SharedPref {
     public static SharedPreferences.Editor editor;
 
     @SuppressLint("CommitPrefEdits")
-    public static void initSharedPref(Activity current, String prefName){
+    public static void initSharedPref(Context current, String prefName){
         if (settings == null) {
             settings = current.getSharedPreferences(prefName,0);
             editor = settings.edit();

@@ -216,4 +216,8 @@ public class DailyMusicManager {
         Gson gson = new Gson();
         SharedPref.setString(SharedPrefConstants.DOWNLOADED_SONG_LIST, gson.toJson(mDownloadedFiles));
     }
+
+    public void test() {
+        songListIsOutDated();
+    }
 }
