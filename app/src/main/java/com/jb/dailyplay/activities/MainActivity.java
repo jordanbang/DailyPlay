@@ -15,10 +15,13 @@ import com.google.android.gms.common.AccountPicker;
 import com.jb.dailyplay.R;
 import com.jb.dailyplay.adapters.SongListAdapter;
 import com.jb.dailyplay.alarmreceiver.DailyPlayAlarmReceiver;
+import com.jb.dailyplay.exceptions.NoSpaceException;
+import com.jb.dailyplay.exceptions.NoWifiException;
 import com.jb.dailyplay.managers.DailyMusicManager;
 import com.jb.dailyplay.models.SongFile;
-import com.jb.dailyplay.utils.LogUtils;
-import com.jb.dailyplay.utils.SharedPref;
+import com.jb.dailyplay.utils.DailyPlaySharedPrefUtils;
+import com.jb.jblibs.LogUtils;
+import com.noveogroup.android.log.Log;
 
 import java.util.Collection;
 
@@ -37,7 +40,7 @@ public class MainActivity extends Activity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        SharedPref.initSharedPref(getApplication(), getResources().getString(R.string.app_name));
+        DailyPlaySharedPrefUtils.init(getApplication());
         mUpdateTextView = (TextView) findViewById(R.id.update);
 
         mListView = (ListView) findViewById(R.id.song_list);
@@ -73,6 +76,8 @@ public class MainActivity extends Activity {
         // as you specify a parent activity in AndroidManifest.xml.
         int id = item.getItemId();
         if (id == R.id.action_settings) {
+            Intent intent = new Intent(this, SettingsActivity.class);
+            startActivity(intent);
             return true;
         }
         return super.onOptionsItemSelected(item);
@@ -106,6 +111,17 @@ public class MainActivity extends Activity {
     }
 
     private void test() {
-        DailyMusicManager.getInstance().test();
+        DailyMusicManager dailyMusicManager = DailyMusicManager.getInstance();
+        dailyMusicManager.login("george.doe231@gmail.com", "***REMOVED***");
+        try {
+            dailyMusicManager.getDailyPlayMusic(this);
+        } catch(NoWifiException e) {
+            Log.e(e);
+        } catch(NoSpaceException e) {
+            Log.e(e);
+        } catch (Exception e) {
+            Log.e(e);
+            LogUtils.appendLog(e);
+        }
     }
 }

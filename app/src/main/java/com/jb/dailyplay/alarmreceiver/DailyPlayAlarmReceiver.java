@@ -34,7 +34,7 @@ public class DailyPlayAlarmReceiver extends WakefulBroadcastReceiver {
         Calendar calendar = Calendar.getInstance();
         calendar.setTimeInMillis(System.currentTimeMillis());
         calendar.set(Calendar.HOUR_OF_DAY, 1);
-//        calendar.set(Calendar.MINUTE, 0);
+        calendar.add(Calendar.DATE, 1);
 
         mAlarmManager.setInexactRepeating(AlarmManager.RTC_WAKEUP, calendar.getTimeInMillis(), AlarmManager.INTERVAL_DAY, mAlarmIntent);
 

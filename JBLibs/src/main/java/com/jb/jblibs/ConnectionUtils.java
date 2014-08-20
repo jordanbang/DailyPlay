@@ -1,4 +1,4 @@
-package com.jb.dailyplay.utils;
+package com.jb.jblibs;
 
 import android.content.Context;
 import android.net.ConnectivityManager;

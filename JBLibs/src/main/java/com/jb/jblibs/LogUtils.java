@@ -1,4 +1,4 @@
-package com.jb.dailyplay.utils;
+package com.jb.jblibs;
 
 import java.io.BufferedWriter;
 import java.io.File;

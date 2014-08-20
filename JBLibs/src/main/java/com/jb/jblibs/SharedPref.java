@@ -1,4 +1,4 @@
-package com.jb.dailyplay.utils;
+package com.jb.jblibs;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
@@ -16,10 +16,6 @@ public class SharedPref {
         }
     }
 
-    public static String getString(String VarName, String DefValue) {
-        return settings.getString(VarName, DefValue);
-    }
-
     public static void setString(String VarName, String nValue) {
         editor.putString(VarName, nValue);
         editor.commit();
@@ -35,8 +31,17 @@ public class SharedPref {
         editor.commit();
     }
 
+    public static void setBoolean(String VarName, boolean val) {
+        editor.putBoolean(VarName, val);
+        editor.commit();
+    }
+
     public static int getInt(String VarName, int DefValue) {
         return settings.getInt(VarName, DefValue);
+    }
+
+    public static String getString(String VarName, String DefValue) {
+        return settings.getString(VarName, DefValue);
     }
 
     public static long getLong(String VarName, int DefValue) {
@@ -45,5 +50,9 @@ public class SharedPref {
 
     public static String getString(String VarName) {
         return getString(VarName, "");
+    }
+
+    public static boolean getBoolean(String VarName, boolean def) {
+        return settings.getBoolean(VarName, def);
     }
 }

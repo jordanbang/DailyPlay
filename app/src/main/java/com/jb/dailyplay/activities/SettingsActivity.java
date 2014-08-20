@@ -2,85 +2,114 @@ package com.jb.dailyplay.activities;
 
 import android.app.Activity;
 import android.os.Bundle;
+import android.view.View;
 import android.widget.CheckBox;
-import android.widget.CompoundButton;
 import android.widget.EditText;
-import android.widget.TextView;
+import android.widget.RadioButton;
+import android.widget.RadioGroup;
 
 import com.jb.dailyplay.R;
 import com.jb.dailyplay.managers.DailyMusicManager;
+import com.jb.dailyplay.utils.DailyPlaySharedPrefUtils;
 
 /**
  * Created by Jordan on 7/12/2014.
  */
 public class SettingsActivity extends Activity {
-    CheckBox mDownloadBySongs;
-    CheckBox mDownloadByTime;
+    RadioGroup mDownloadByGroup;
+    RadioButton mDownloadBySongs;
+    RadioButton mDownloadByTime;
     CheckBox mShowNotifications;
     CheckBox mKeepPlayList;
     EditText mNumberOfSongs;
     EditText mTimeOfList;
-    TextView mNumberOfSongsText;
-    TextView mTimeOfListText;
 
-    public static class DownloadOptions {
-        public static final int SONGS = 0;
-        public static final int TIME = 1;
-    }
+    private int mDownloadOption;
+    private View downloadBySongsOptions;
+    private View downloadByTimeOptions;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_settings);
 
-        mDownloadBySongs = (CheckBox) findViewById(R.id.download_by_songs);
-        mDownloadByTime = (CheckBox) findViewById(R.id.download_by_time);
+        downloadBySongsOptions = findViewById(R.id.by_amount_group);
+        downloadByTimeOptions = findViewById(R.id.by_time_group);
+
+        mDownloadByGroup = (RadioGroup) findViewById(R.id.radio_group);
+        mDownloadByGroup.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(RadioGroup radioGroup, int radioButton) {
+                switch(radioButton) {
+                    case R.id.download_by_songs:
+                        mDownloadOption = DailyMusicManager.DownloadOptions.SONGS;
+                        break;
+                    case R.id.download_by_time:
+                        mDownloadOption = DailyMusicManager.DownloadOptions.TIME;
+                        break;
+                }
+                setViewForDownloadOption(false);
+            }
+        });
+
         mShowNotifications = (CheckBox) findViewById(R.id.show_notifications);
         mKeepPlayList = (CheckBox) findViewById(R.id.keep_dailyplay_lists);
 
         mNumberOfSongs = (EditText) findViewById(R.id.number_of_songs);
         mTimeOfList = (EditText) findViewById(R.id.length_of_playlist);
 
-        mNumberOfSongsText = (TextView) findViewById(R.id.text_number_of_songs);
-        mTimeOfListText = (TextView) findViewById(R.id.text_length_of_list);
-
-
-        mDownloadBySongs.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-            @Override
-            public void onCheckedChanged(CompoundButton compoundButton, boolean isChecked) {
-                if (isChecked) {
-                    onlyOneOptionChecked(DownloadOptions.SONGS);
-                    DailyMusicManager.getInstance().saveDownloadOption(DownloadOptions.SONGS);
-                }
-            }
-        });
-
-        mDownloadByTime.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-            @Override
-            public void onCheckedChanged(CompoundButton compoundButton, boolean isChecked) {
-                if (isChecked) {
-                    onlyOneOptionChecked(DownloadOptions.TIME);
-                    DailyMusicManager.getInstance().saveDownloadOption(DownloadOptions.SONGS);
-                }
-            }
-        });
+        loadSavedSettings();
     }
 
-    private void onlyOneOptionChecked(int downloadOption) {
-        if (downloadOption == DownloadOptions.SONGS) {
-            //downloading by number
-            mDownloadByTime.setChecked(false);
-            mTimeOfList.setEnabled(false);
-            mTimeOfListText.setEnabled(false);
-            mNumberOfSongs.setEnabled(true);
-            mNumberOfSongsText.setEnabled(true);
-        } else {
-            //downloading by time
-            mDownloadBySongs.setChecked(false);
-            mNumberOfSongsText.setEnabled(false);
-            mNumberOfSongs.setEnabled(false);
-            mTimeOfList.setEnabled(true);
-            mTimeOfListText.setEnabled(true);
+    @Override
+    protected void onPause() {
+        super.onPause();
+        saveInfo();
+    }
+
+    private void saveInfo() {
+        DailyPlaySharedPrefUtils.saveDownloadOption(mDownloadOption);
+        String playListLength = "";
+        switch(mDownloadOption) {
+            case DailyMusicManager.DownloadOptions.SONGS:
+                playListLength = mNumberOfSongs.getText().toString();
+                break;
+            case DailyMusicManager.DownloadOptions.TIME:
+                playListLength = mTimeOfList.getText().toString();
+                break;
+        }
+        DailyPlaySharedPrefUtils.saveLengthOfPlayList(playListLength);
+        DailyPlaySharedPrefUtils.saveShowNotifications(mShowNotifications.isChecked());
+        DailyPlaySharedPrefUtils.saveKeepPlayList(mKeepPlayList.isChecked());
+    }
+
+    private void loadSavedSettings() {
+        mDownloadOption = DailyPlaySharedPrefUtils.getDownloadOption();
+        setViewForDownloadOption(true);
+        mShowNotifications.setChecked(DailyPlaySharedPrefUtils.getShowNotifications());
+        mKeepPlayList.setChecked(DailyPlaySharedPrefUtils.getKeepPlayList());
+    }
+
+    private void setViewForDownloadOption(final boolean setChecked) {
+        switch(mDownloadOption) {
+            case DailyMusicManager.DownloadOptions.SONGS:
+                downloadBySongsOptions.setVisibility(View.VISIBLE);
+                downloadByTimeOptions.setVisibility(View.GONE);
+                if (setChecked) {
+                    RadioButton downloadBySongs = (RadioButton) findViewById(R.id.download_by_songs);
+                    downloadBySongs.setChecked(true);
+                }
+
+                break;
+            case DailyMusicManager.DownloadOptions.TIME:
+                downloadBySongsOptions.setVisibility(View.GONE);
+                downloadByTimeOptions.setVisibility(View.VISIBLE);
+                if (setChecked) {
+                    RadioButton downloadByTime = (RadioButton) findViewById(R.id.download_by_time);
+                    downloadByTime.setChecked(true);
+                }
+                break;
         }
     }
 }
+

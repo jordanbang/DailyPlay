@@ -1,11 +1,11 @@
-package com.jb.dailyplay.utils;
+package com.jb.jblibs;
 
 import android.util.Patterns;
 
 public class StringUtils {
 
 	public static boolean isEmptyString(String text) {
-		return text == null || text.length() == 0;
+		return text == null || text.length() == 0 || text.equalsIgnoreCase("");
 	}
 	
 	public static boolean isNotEmptyString(String text) {

@@ -3,6 +3,7 @@
   <component name="ProjectModuleManager">
     <modules>
       <module fileurl="file://$PROJECT_DIR$/DailyPlay.iml" filepath="$PROJECT_DIR$/DailyPlay.iml" />
+      <module fileurl="file://$PROJECT_DIR$/JBLibs/JBLibs.iml" filepath="$PROJECT_DIR$/JBLibs/JBLibs.iml" />
       <module fileurl="file://$PROJECT_DIR$/app/app.iml" filepath="$PROJECT_DIR$/app/app.iml" />
     </modules>
   </component>
