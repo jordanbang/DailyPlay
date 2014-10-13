@@ -13,9 +13,10 @@ import com.jb.dailyplay.GooglePlayMusicApi.model.Song;
 import com.jb.dailyplay.exceptions.NoSpaceException;
 import com.jb.dailyplay.exceptions.NoWifiException;
 import com.jb.dailyplay.models.SongFile;
+import com.jb.dailyplay.utils.ConnectionUtils;
 import com.jb.dailyplay.utils.DailyPlaySharedPrefUtils;
-import com.jb.jblibs.ConnectionUtils;
-import com.jb.jblibs.StringUtils;
+import com.jb.dailyplay.utils.SharedPref;
+import com.jb.dailyplay.utils.StringUtils;
 import com.noveogroup.android.log.Log;
 
 import java.io.File;
@@ -208,7 +209,9 @@ public class DailyMusicManager {
         DailyPlaySharedPrefUtils.setSongList(gson.toJson(mSongList));
     }
 
-    public void login(String username, String password) {
+    public void login() {
+        String username = SharedPref.getString(DailyPlaySharedPrefUtils.USERNAME);
+        String password = SharedPref.getString(DailyPlaySharedPrefUtils.PASSWORD);
         try {
             mApi.login(username, password);
         } catch (Exception e) {

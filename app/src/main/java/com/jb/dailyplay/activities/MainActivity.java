@@ -1,26 +1,33 @@
 package com.jb.dailyplay.activities;
 
 import android.app.Activity;
+import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
+import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.TextView;
+import android.widget.Toast;
 
-import com.google.android.gms.auth.GoogleAuthUtil;
-import com.google.android.gms.common.AccountPicker;
 import com.jb.dailyplay.R;
 import com.jb.dailyplay.adapters.SongListAdapter;
 import com.jb.dailyplay.alarmreceiver.DailyPlayAlarmReceiver;
 import com.jb.dailyplay.exceptions.NoSpaceException;
 import com.jb.dailyplay.exceptions.NoWifiException;
+import com.jb.dailyplay.listeners.CheckUserCredentialsListener;
 import com.jb.dailyplay.managers.DailyMusicManager;
 import com.jb.dailyplay.models.SongFile;
+import com.jb.dailyplay.tasks.CheckUserCredentialsTask;
 import com.jb.dailyplay.utils.DailyPlaySharedPrefUtils;
-import com.jb.jblibs.LogUtils;
+import com.jb.dailyplay.utils.LogUtils;
+import com.jb.dailyplay.utils.SharedPref;
+import com.jb.dailyplay.utils.StringUtils;
 import com.noveogroup.android.log.Log;
 
 import java.util.Collection;
@@ -55,11 +62,59 @@ public class MainActivity extends Activity {
                 test();
             }
         });
+        promptForUserInformation();
     }
 
-    public void chooseGoogleAccount() {
-        Intent googlePicker = AccountPicker.newChooseAccountIntent(null, null, new String[]{GoogleAuthUtil.GOOGLE_ACCOUNT_TYPE}, false, "Select account with Google Play Music", null, null, null);
-        startActivityForResult(googlePicker, PICK_ACCOUNT_REQUEST);
+    private void promptForUserInformation() {
+        if (DailyPlaySharedPrefUtils.doesUserInformationExist()) {
+            return;
+        }
+
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setTitle("Login");
+        LayoutInflater inflater = this.getLayoutInflater();
+        View view = inflater.inflate(R.layout.login_dialog, null);
+        final EditText usernameEditText = (EditText) view.findViewById(R.id.login_email);
+        final EditText passwordEditText = (EditText) view.findViewById(R.id.login_password);
+
+        builder.setView(view);
+        builder.setPositiveButton("Login", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialogInterface, int id) {
+                String username = usernameEditText.getText().toString();
+                String password = passwordEditText.getText().toString();
+
+                if (StringUtils.isEmptyString(username) || !StringUtils.isValidEmail(username)) {
+                    usernameEditText.setError("Please enter valid email address.");
+                } else if (StringUtils.isEmptyString(password)) {
+                    passwordEditText.setError("Please enter your password.");
+                } else {
+                    dialogInterface.dismiss();
+                    SharedPref.setString(DailyPlaySharedPrefUtils.USERNAME, username);
+                    SharedPref.setString(DailyPlaySharedPrefUtils.PASSWORD, password);
+                    CheckUserCredentialsListener listener = new CheckUserCredentialsListener() {
+                        @Override
+                        public void onComplete(boolean isSuccessful) {
+                            if (isSuccessful) {
+                                Toast.makeText(MainActivity.this, "Login Successful", Toast.LENGTH_SHORT);
+                            } else {
+                                promptForUserInformation();
+                            }
+                        }
+                    };
+                    new CheckUserCredentialsTask().execute(listener);
+                }
+            }
+        });
+
+        builder.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialogInterface, int i) {
+                dialogInterface.dismiss();
+            }
+        });
+
+        builder.create().show();
     }
 
     @Override
@@ -83,19 +138,6 @@ public class MainActivity extends Activity {
         return super.onOptionsItemSelected(item);
     }
 
-//    @Override
-//    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-//        if (requestCode == PICK_ACCOUNT_REQUEST && resultCode == RESULT_OK) {
-//            mAccountName = data.getStringExtra(AccountManager.KEY_ACCOUNT_NAME);
-//            try {
-//                mAuthToken = GoogleAuthUtil.getToken(this, mAccountName, null);
-//            } catch (Exception e) {
-//                Log.e(TAG, "getting auth token failed");
-//            }
-//        }
-//        super.onActivityResult(requestCode, resultCode, data);
-//    }
-
     private void updateListView() {
         Collection<SongFile> downloadedSongs = DailyMusicManager.getInstance().getDownloadedSongs();
         if (downloadedSongs == null) {
@@ -111,17 +153,25 @@ public class MainActivity extends Activity {
     }
 
     private void test() {
-        DailyMusicManager dailyMusicManager = DailyMusicManager.getInstance();
-        dailyMusicManager.login("george.doe231@gmail.com", "***REMOVED***");
-        try {
-            dailyMusicManager.getDailyPlayMusic(this);
-        } catch(NoWifiException e) {
-            Log.e(e);
-        } catch(NoSpaceException e) {
-            Log.e(e);
-        } catch (Exception e) {
-            Log.e(e);
-            LogUtils.appendLog(e);
-        }
+        Thread thread = new Thread(new Runnable() {
+            @Override
+            public void run() {
+                DailyMusicManager dailyMusicManager = DailyMusicManager.getInstance();
+                dailyMusicManager.login();
+                try {
+                    dailyMusicManager.getDailyPlayMusic(MainActivity.this);
+                } catch(NoWifiException e) {
+                    Log.e(e);
+                } catch(NoSpaceException e) {
+                    Log.e(e);
+                } catch (Exception e) {
+                    Log.e(e);
+                    LogUtils.appendLog(e);
+                }
+            }
+        });
+        thread.start();
     }
 }
+
+

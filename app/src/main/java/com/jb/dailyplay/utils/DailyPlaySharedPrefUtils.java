@@ -3,8 +3,6 @@ package com.jb.dailyplay.utils;
 import android.content.Context;
 
 import com.jb.dailyplay.managers.DailyMusicManager;
-import com.jb.jblibs.SharedPref;
-import com.jb.jblibs.StringUtils;
 
 /**
  * Created by Jordan on 7/12/2014.
@@ -20,6 +18,8 @@ public class DailyPlaySharedPrefUtils {
     public static final String TIME_OF_SONGS_TO_DOWNLOAD = "time_of_songs_to_download";
     public static final String SHOW_NOTIFICATIONS = "show_notifications";
     public static final String KEEP_PLAYLIST = "keep_playlist";
+    public static final String USERNAME = "username";
+    public static final String PASSWORD = "password";
 
     private DailyPlaySharedPrefUtils() {
     }
@@ -51,7 +51,6 @@ public class DailyPlaySharedPrefUtils {
                 break;
         }
     }
-
 
     public static int getLengthOfPlayList() {
         int downloadOption = getDownloadOption();
@@ -102,5 +101,15 @@ public class DailyPlaySharedPrefUtils {
 
     public static boolean getKeepPlayList() {
         return SharedPref.getBoolean(KEEP_PLAYLIST, true);
+    }
+
+    public static boolean doesUserInformationExist() {
+        String user = SharedPref.getString(USERNAME);
+        String pass = SharedPref.getString(PASSWORD);
+
+        if (StringUtils.isEmptyString(user) || StringUtils.isEmptyString(pass)) {
+            return false;
+        }
+        return true;
     }
 }

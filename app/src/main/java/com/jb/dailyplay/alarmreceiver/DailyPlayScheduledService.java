@@ -13,7 +13,7 @@ import com.jb.dailyplay.exceptions.NoSpaceException;
 import com.jb.dailyplay.exceptions.NoWifiException;
 import com.jb.dailyplay.managers.DailyMusicManager;
 import com.jb.dailyplay.utils.DailyPlaySharedPrefUtils;
-import com.jb.jblibs.LogUtils;
+import com.jb.dailyplay.utils.LogUtils;
 import com.noveogroup.android.log.Log;
 
 import java.text.DateFormat;
@@ -37,7 +37,7 @@ public class DailyPlayScheduledService extends IntentService{
     protected void onHandleIntent(Intent intent) {
         DailyPlaySharedPrefUtils.init(getApplication());
         DailyMusicManager dailyMusicManager = DailyMusicManager.getInstance();
-        dailyMusicManager.login("george.doe231@gmail.com", "***REMOVED***");
+        dailyMusicManager.login();
         try {
             dailyMusicManager.getDailyPlayMusic(this);
             sendNotification("Songs successfully downloaded.  Enjoy your new DailyPlay list!");
