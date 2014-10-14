@@ -5,6 +5,7 @@ import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -28,7 +29,6 @@ import com.jb.dailyplay.utils.DailyPlaySharedPrefUtils;
 import com.jb.dailyplay.utils.LogUtils;
 import com.jb.dailyplay.utils.SharedPref;
 import com.jb.dailyplay.utils.StringUtils;
-import com.noveogroup.android.log.Log;
 
 import java.util.Collection;
 
@@ -161,11 +161,10 @@ public class MainActivity extends Activity {
                 try {
                     dailyMusicManager.getDailyPlayMusic(MainActivity.this);
                 } catch(NoWifiException e) {
-                    Log.e(e);
+                    LogUtils.appendLog(e);
                 } catch(NoSpaceException e) {
-                    Log.e(e);
+                    LogUtils.appendLog(e);
                 } catch (Exception e) {
-                    Log.e(e);
                     LogUtils.appendLog(e);
                 }
             }
