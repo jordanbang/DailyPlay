@@ -5,6 +5,7 @@ import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -28,17 +29,11 @@ import com.jb.dailyplay.utils.DailyPlaySharedPrefUtils;
 import com.jb.dailyplay.utils.LogUtils;
 import com.jb.dailyplay.utils.SharedPref;
 import com.jb.dailyplay.utils.StringUtils;
-import com.noveogroup.android.log.Log;
 
 import java.util.Collection;
 
 
 public class MainActivity extends Activity {
-    private static final int PICK_ACCOUNT_REQUEST = 0;
-    private static final String mScope = "";
-    private static final String TAG = "MainActivity";
-    private String mAccountName;
-    private String mAuthToken;
     private TextView mUpdateTextView;
     private ListView mListView;
     private DailyPlayAlarmReceiver mAlarm = new DailyPlayAlarmReceiver();
@@ -62,20 +57,22 @@ public class MainActivity extends Activity {
                 test();
             }
         });
-        promptForUserInformation();
+        promptForUserInformation(false);
     }
 
-    private void promptForUserInformation() {
+    private void promptForUserInformation(boolean isReprompt) {
         if (DailyPlaySharedPrefUtils.doesUserInformationExist()) {
             return;
         }
 
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
-        builder.setTitle("Login");
+        String title = !isReprompt ? "Login" : "Login Again";
+        builder.setTitle(title);
         LayoutInflater inflater = this.getLayoutInflater();
         View view = inflater.inflate(R.layout.login_dialog, null);
         final EditText usernameEditText = (EditText) view.findViewById(R.id.login_email);
         final EditText passwordEditText = (EditText) view.findViewById(R.id.login_password);
+
 
         builder.setView(view);
         builder.setPositiveButton("Login", new DialogInterface.OnClickListener() {
@@ -98,7 +95,7 @@ public class MainActivity extends Activity {
                             if (isSuccessful) {
                                 Toast.makeText(MainActivity.this, "Login Successful", Toast.LENGTH_SHORT);
                             } else {
-                                promptForUserInformation();
+                                promptForUserInformation(true);
                             }
                         }
                     };
@@ -161,11 +158,11 @@ public class MainActivity extends Activity {
                 try {
                     dailyMusicManager.getDailyPlayMusic(MainActivity.this);
                 } catch(NoWifiException e) {
-                    Log.e(e);
+                    Log.e("DailyPlay - test error", e.toString());
                 } catch(NoSpaceException e) {
-                    Log.e(e);
+                    Log.e("DailyPlay - test error", e.toString());
                 } catch (Exception e) {
-                    Log.e(e);
+                    Log.e("DailyPlay - test error", e.toString());
                     LogUtils.appendLog(e);
                 }
             }

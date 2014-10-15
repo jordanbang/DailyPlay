@@ -1,6 +1,7 @@
 package com.jb.dailyplay.tasks;
 
 import android.os.AsyncTask;
+import android.util.Log;
 
 import com.jb.dailyplay.listeners.CheckUserCredentialsListener;
 import com.jb.dailyplay.managers.DailyMusicManager;
@@ -28,6 +29,7 @@ public class CheckUserCredentialsTask extends AsyncTask<CheckUserCredentialsList
     @Override
     protected void onPostExecute(Boolean loginSuccessful) {
         super.onPostExecute(loginSuccessful);
+        Log.e("DailyPlay - Login Task", "login was successful = " + loginSuccessful);
         mListener.onComplete(loginSuccessful);
     }
 }

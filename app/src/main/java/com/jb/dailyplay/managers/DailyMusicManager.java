@@ -5,6 +5,7 @@ import android.content.Intent;
 import android.net.Uri;
 import android.os.Environment;
 import android.text.format.DateUtils;
+import android.util.Log;
 
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
@@ -17,7 +18,6 @@ import com.jb.dailyplay.utils.ConnectionUtils;
 import com.jb.dailyplay.utils.DailyPlaySharedPrefUtils;
 import com.jb.dailyplay.utils.SharedPref;
 import com.jb.dailyplay.utils.StringUtils;
-import com.noveogroup.android.log.Log;
 
 import java.io.File;
 import java.io.IOException;
@@ -108,7 +108,7 @@ public class DailyMusicManager {
             Intent mediaScanIntent = new Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE);
             mediaScanIntent.setData(uri);
             context.sendBroadcast(mediaScanIntent);
-            Log.i("Scanned file:" + file.getFile().getName());
+            Log.i("DailyPlay - Scanned file", file.getFile().getName());
         }
 
     }
@@ -126,7 +126,7 @@ public class DailyMusicManager {
         for(SongFile downloadedFile : downloadedFiles) {
             File file = downloadedFile.getFile();
             file.delete();
-            Log.i("Deleting file: " + file.getName());
+            Log.i("DailyPlay - Deleting file",  file.getName());
         }
         DailyPlaySharedPrefUtils.setDownloadedSongList("");
         scanMediaFiles(downloadedFiles, context);
@@ -163,9 +163,9 @@ public class DailyMusicManager {
         }
 
         deleteOldDailyPlayList(context);
-        Log.i("Starting to download songs");
+        Log.i("DailyPlay", "Starting to download songs");
         mDownloadedFiles = mApi.downloadSongs(downloadList, context);
-        Log.i("Songs downloaded");
+        Log.i("DailyPlay", "Songs downloaded");
         saveDailyPlayList();
         scanMediaFiles(mDownloadedFiles, context);
     }
@@ -190,13 +190,13 @@ public class DailyMusicManager {
 
     private void loadSongList() throws IOException, URISyntaxException {
         if (mSongList == null || mSongList.size() == 0) {
-            Log.i("Downloading song list");
+            Log.i("DailyPlay", "Downloading song list");
             if (songListIsOutDated()) {
                 downloadSongList();
             } else {
                 loadSongListFromSharedPref();
             }
-            Log.i("Downloaded song list");
+            Log.i("DailyPlay", "Downloaded song list");
         }
 
     }
@@ -215,7 +215,7 @@ public class DailyMusicManager {
         try {
             mApi.login(username, password);
         } catch (Exception e) {
-            Log.e(e);
+            Log.e("DailyPlay - login error", e.toString());
         }
     }
 

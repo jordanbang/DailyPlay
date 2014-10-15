@@ -6,6 +6,7 @@ import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
 import android.support.v4.app.NotificationCompat;
+import android.util.Log;
 
 import com.jb.dailyplay.R;
 import com.jb.dailyplay.activities.MainActivity;
@@ -14,7 +15,6 @@ import com.jb.dailyplay.exceptions.NoWifiException;
 import com.jb.dailyplay.managers.DailyMusicManager;
 import com.jb.dailyplay.utils.DailyPlaySharedPrefUtils;
 import com.jb.dailyplay.utils.LogUtils;
-import com.noveogroup.android.log.Log;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
@@ -42,20 +42,20 @@ public class DailyPlayScheduledService extends IntentService{
             dailyMusicManager.getDailyPlayMusic(this);
             sendNotification("Songs successfully downloaded.  Enjoy your new DailyPlay list!");
         } catch(NoWifiException e) {
-            Log.e(e);
+            Log.e("DailyPlay - error in scheduled service", e.toString());
             sendNotification("Your device was not connected to Wifi. We were unable to download a new DailyPlay list.");
         } catch(NoSpaceException e) {
-            Log.e(e);
+            Log.e("DailyPlay - error in scheduled service", e.toString());
             sendNotification("Not enough space to download a new DailyPlay list");
         } catch (Exception e) {
-            Log.e(e);
+            Log.e("DailyPlay - error in scheduled service", e.toString());
             LogUtils.appendLog(e);
             sendNotification("An error occurred while trying to download your DailyPlay list.");
         }
 
         Date date = new Date(System.currentTimeMillis());
         DateFormat format = new SimpleDateFormat("HH:mm:ss");
-        Log.i("Daily Play List downloaded at " + format.format(date));
+        Log.i("DailyPlay - list downloaded @", format.format(date));
         DailyPlayAlarmReceiver.completeWakefulIntent(intent);
     }
 

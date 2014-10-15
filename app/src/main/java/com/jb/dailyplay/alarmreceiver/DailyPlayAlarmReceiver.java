@@ -7,8 +7,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.support.v4.content.WakefulBroadcastReceiver;
-
-import com.noveogroup.android.log.Log;
+import android.util.Log;
 
 import java.util.Calendar;
 
@@ -26,7 +25,7 @@ public class DailyPlayAlarmReceiver extends WakefulBroadcastReceiver {
     }
 
     public void setAlarm(Context context) {
-        Log.i("Alarm being set");
+        Log.i("DailyPlay - setting alarm", "Alarm being set");
         mAlarmManager = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
         Intent intent = new Intent(context, DailyPlayAlarmReceiver.class);
         mAlarmIntent = PendingIntent.getBroadcast(context, 0, intent, 0);
