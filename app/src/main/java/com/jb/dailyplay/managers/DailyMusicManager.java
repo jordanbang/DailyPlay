@@ -42,8 +42,8 @@ public class DailyMusicManager {
 
     private static DailyMusicManager mInstance;
     private final GoogleMusicAPI mApi;
-    private Collection<Song> mSongList;
-    private Collection<SongFile> mDownloadedFiles;
+    private ArrayList<Song> mSongList;
+    private ArrayList<SongFile> mDownloadedFiles;
 
     private int mSongCount = 0;
 
@@ -69,7 +69,11 @@ public class DailyMusicManager {
         ArrayList<Integer> ret = new ArrayList<Integer>();
         for (int i = 0; i < number; i++) {
             Random rand = new Random();
-            ret.add(rand.nextInt(mSongCount + 1));
+            int nextVal = rand.nextInt(mSongCount);
+            while (ret.contains(nextVal)) {
+                nextVal = rand.nextInt(mSongCount);
+            }
+            ret.add(nextVal);
         }
         return ret;
     }
@@ -77,12 +81,8 @@ public class DailyMusicManager {
     private ArrayList<Song> getSongForRandomIndices(List<Integer> randomNumbers) {
         ArrayList<Song> songs = new ArrayList<Song>();
 
-        int count = 0;
-        for (Song song : mSongList) {
-            if (randomNumbers.contains(count)){
-                songs.add(song);
-            }
-            count++;
+        for (Integer songIndex: randomNumbers) {
+            songs.add(mSongList.get(songIndex));
         }
         return songs;
     }
@@ -139,7 +139,7 @@ public class DailyMusicManager {
         }
 
         Gson gson = new Gson();
-        Collection<SongFile> downloadedFiles = null;
+        ArrayList<SongFile> downloadedFiles = null;
         Type type = new TypeToken<Collection<SongFile>>(){}.getType();
         downloadedFiles = gson.fromJson(oldDailyPlayList, type);
         mDownloadedFiles = downloadedFiles;
@@ -255,6 +255,13 @@ public class DailyMusicManager {
     }
 
     public void test() {
-        songListIsOutDated();
+        try {
+            loadSongList();
+        } catch (IOException e) {
+            e.printStackTrace();
+        } catch (URISyntaxException e) {
+            e.printStackTrace();
+        }
+        getSongList();
     }
 }

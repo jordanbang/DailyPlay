@@ -19,8 +19,6 @@ import android.widget.Toast;
 import com.jb.dailyplay.R;
 import com.jb.dailyplay.adapters.SongListAdapter;
 import com.jb.dailyplay.alarmreceiver.DailyPlayAlarmReceiver;
-import com.jb.dailyplay.exceptions.NoSpaceException;
-import com.jb.dailyplay.exceptions.NoWifiException;
 import com.jb.dailyplay.listeners.CheckUserCredentialsListener;
 import com.jb.dailyplay.managers.DailyMusicManager;
 import com.jb.dailyplay.models.SongFile;
@@ -156,11 +154,7 @@ public class MainActivity extends Activity {
                 DailyMusicManager dailyMusicManager = DailyMusicManager.getInstance();
                 dailyMusicManager.login();
                 try {
-                    dailyMusicManager.getDailyPlayMusic(MainActivity.this);
-                } catch(NoWifiException e) {
-                    Log.e("DailyPlay - test error", e.toString());
-                } catch(NoSpaceException e) {
-                    Log.e("DailyPlay - test error", e.toString());
+                    dailyMusicManager.test();
                 } catch (Exception e) {
                     Log.e("DailyPlay - test error", e.toString());
                     LogUtils.appendLog(e);

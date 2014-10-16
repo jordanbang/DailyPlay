@@ -95,8 +95,8 @@ public class GoogleMusicAPI implements IGoogleMusicAPI {
     }
 
     @Override
-    public final Collection<Song> getAllSongs() throws IOException, URISyntaxException {
-        final Collection<Song> chunkedCollection = new ArrayList<Song>();
+    public final ArrayList<Song> getAllSongs() throws IOException, URISyntaxException {
+        final ArrayList<Song> chunkedCollection = new ArrayList<Song>();
 
         // Map<String, String> fields = new HashMap<String, String>();
         // fields.put("json", "{\"continuationToken\":\"" + continuationToken +
@@ -238,8 +238,8 @@ public class GoogleMusicAPI implements IGoogleMusicAPI {
     }
 
     @Override
-    public Collection<SongFile> downloadSongs(final Collection<Song> songs, final Context context) throws MalformedURLException, IOException, URISyntaxException, InvalidDataException {
-        final Collection<SongFile> files = new ArrayList<SongFile>();
+    public ArrayList<SongFile> downloadSongs(final Collection<Song> songs, final Context context) throws MalformedURLException, IOException, URISyntaxException, InvalidDataException {
+        final ArrayList<SongFile> files = new ArrayList<SongFile>();
         for (final Song song : songs) {
             files.add(downloadSong(song, context));
         }
