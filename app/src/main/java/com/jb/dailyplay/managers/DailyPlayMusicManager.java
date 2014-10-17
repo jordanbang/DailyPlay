@@ -33,14 +33,15 @@ import java.util.Random;
  * Created by Jordan on 6/3/2014.
  * All functions that make network calls assume that they are being run on a background thread
  */
-public class DailyMusicManager {
+public class DailyPlayMusicManager {
     public static final int DEF_NUMBER_OF_SONGS = 10;
     public static final int DEF_TIME_OF_PLAY_LIST = 10;
 
     private static final long ONE_WEEK = DateUtils.WEEK_IN_MILLIS;
     private static final long MEGABYTE = 1024L;
+    private static final long TEN_MEGABYTES = 10*MEGABYTE;
 
-    private static DailyMusicManager mInstance;
+    private static DailyPlayMusicManager mInstance;
     private final GoogleMusicAPI mApi;
     private ArrayList<Song> mSongList;
     private ArrayList<SongFile> mDownloadedFiles;
@@ -52,37 +53,26 @@ public class DailyMusicManager {
         public static final int TIME = 1;
     }
 
-    public static DailyMusicManager getInstance() {
+    public static DailyPlayMusicManager getInstance() {
         if (mInstance == null) {
-            mInstance = new DailyMusicManager();
+            mInstance = new DailyPlayMusicManager();
         }
         return mInstance;
     }
 
-    private DailyMusicManager() {
+    private DailyPlayMusicManager() {
         mApi = new GoogleMusicAPI();
     }
 
-    private static final long TEN_MEGABYTES = 10*MEGABYTE;
-
-    private ArrayList<Integer> getRandomNumbers(int number) {
-        ArrayList<Integer> ret = new ArrayList<Integer>();
-        for (int i = 0; i < number; i++) {
-            Random rand = new Random();
-            int nextVal = rand.nextInt(mSongCount);
-            while (ret.contains(nextVal)) {
-                nextVal = rand.nextInt(mSongCount);
-            }
-            ret.add(nextVal);
-        }
-        return ret;
-    }
-
-    private ArrayList<Song> getSongForRandomIndices(List<Integer> randomNumbers) {
+    private ArrayList<Song> getSongForRandomIndices(int numberOfSongs) {
         ArrayList<Song> songs = new ArrayList<Song>();
-
-        for (Integer songIndex: randomNumbers) {
-            songs.add(mSongList.get(songIndex));
+        for (int i = 0; i < numberOfSongs; i++) {
+            Random rand = new Random();
+            int nextSongIndex = rand.nextInt(mSongCount);
+            while(songs.contains(mSongList.get(nextSongIndex))) {
+                nextSongIndex = rand.nextInt(mSongCount);
+            }
+            songs.add(mSongList.get(nextSongIndex));
         }
         return songs;
     }
@@ -176,8 +166,7 @@ public class DailyMusicManager {
         int playListLength = DailyPlaySharedPrefUtils.getLengthOfPlayList();
         switch(downloadOption) {
             case DownloadOptions.SONGS:
-                List<Integer> randomNumbers = getRandomNumbers(playListLength);
-                songs = getSongForRandomIndices(randomNumbers);
+                songs = getSongForRandomIndices(playListLength);
                 break;
             case DownloadOptions.TIME:
                 songs = getSongFromPlaylistLength(playListLength);
@@ -262,6 +251,7 @@ public class DailyMusicManager {
         } catch (URISyntaxException e) {
             e.printStackTrace();
         }
+        DailyPlaySharedPrefUtils.saveDownloadOption(DownloadOptions.SONGS);
         getSongList();
     }
 }

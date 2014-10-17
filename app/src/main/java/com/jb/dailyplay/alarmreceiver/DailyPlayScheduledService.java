@@ -12,7 +12,7 @@ import com.jb.dailyplay.R;
 import com.jb.dailyplay.activities.MainActivity;
 import com.jb.dailyplay.exceptions.NoSpaceException;
 import com.jb.dailyplay.exceptions.NoWifiException;
-import com.jb.dailyplay.managers.DailyMusicManager;
+import com.jb.dailyplay.managers.DailyPlayMusicManager;
 import com.jb.dailyplay.utils.DailyPlaySharedPrefUtils;
 import com.jb.dailyplay.utils.LogUtils;
 
@@ -36,10 +36,10 @@ public class DailyPlayScheduledService extends IntentService{
     @Override
     protected void onHandleIntent(Intent intent) {
         DailyPlaySharedPrefUtils.init(getApplication());
-        DailyMusicManager dailyMusicManager = DailyMusicManager.getInstance();
-        dailyMusicManager.login();
+        DailyPlayMusicManager dailyPlayMusicManager = DailyPlayMusicManager.getInstance();
+        dailyPlayMusicManager.login();
         try {
-            dailyMusicManager.getDailyPlayMusic(this);
+            dailyPlayMusicManager.getDailyPlayMusic(this);
             sendNotification("Songs successfully downloaded.  Enjoy your new DailyPlay list!");
         } catch(NoWifiException e) {
             Log.e("DailyPlay - error in scheduled service", e.toString());

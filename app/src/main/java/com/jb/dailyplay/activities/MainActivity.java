@@ -20,7 +20,7 @@ import com.jb.dailyplay.R;
 import com.jb.dailyplay.adapters.SongListAdapter;
 import com.jb.dailyplay.alarmreceiver.DailyPlayAlarmReceiver;
 import com.jb.dailyplay.listeners.CheckUserCredentialsListener;
-import com.jb.dailyplay.managers.DailyMusicManager;
+import com.jb.dailyplay.managers.DailyPlayMusicManager;
 import com.jb.dailyplay.models.SongFile;
 import com.jb.dailyplay.tasks.CheckUserCredentialsTask;
 import com.jb.dailyplay.utils.DailyPlaySharedPrefUtils;
@@ -134,7 +134,7 @@ public class MainActivity extends Activity {
     }
 
     private void updateListView() {
-        Collection<SongFile> downloadedSongs = DailyMusicManager.getInstance().getDownloadedSongs();
+        Collection<SongFile> downloadedSongs = DailyPlayMusicManager.getInstance().getDownloadedSongs();
         if (downloadedSongs == null) {
             return;
         }
@@ -151,10 +151,10 @@ public class MainActivity extends Activity {
         Thread thread = new Thread(new Runnable() {
             @Override
             public void run() {
-                DailyMusicManager dailyMusicManager = DailyMusicManager.getInstance();
-                dailyMusicManager.login();
+                DailyPlayMusicManager dailyPlayMusicManager = DailyPlayMusicManager.getInstance();
+                dailyPlayMusicManager.login();
                 try {
-                    dailyMusicManager.test();
+                    dailyPlayMusicManager.test();
                 } catch (Exception e) {
                     Log.e("DailyPlay - test error", e.toString());
                     LogUtils.appendLog(e);

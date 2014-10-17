@@ -2,7 +2,7 @@ package com.jb.dailyplay.utils;
 
 import android.content.Context;
 
-import com.jb.dailyplay.managers.DailyMusicManager;
+import com.jb.dailyplay.managers.DailyPlayMusicManager;
 
 /**
  * Created by Jordan on 7/12/2014.
@@ -33,7 +33,7 @@ public class DailyPlaySharedPrefUtils {
     }
 
     public static int getDownloadOption() {
-        return SharedPref.getInt(DOWNLOAD_OPTION, DailyMusicManager.DownloadOptions.SONGS);
+        return SharedPref.getInt(DOWNLOAD_OPTION, DailyPlayMusicManager.DownloadOptions.SONGS);
     }
 
     public static void saveLengthOfPlayList(String playListLength) {
@@ -43,10 +43,10 @@ public class DailyPlaySharedPrefUtils {
 
         int downloadOption = getDownloadOption();
         switch (downloadOption) {
-            case DailyMusicManager.DownloadOptions.SONGS:
+            case DailyPlayMusicManager.DownloadOptions.SONGS:
                 SharedPref.setInt(NUMBER_OF_SONGS_TO_DOWNLOAD, Integer.parseInt(playListLength));
                 break;
-            case DailyMusicManager.DownloadOptions.TIME:
+            case DailyPlayMusicManager.DownloadOptions.TIME:
                 SharedPref.setInt(TIME_OF_SONGS_TO_DOWNLOAD, Integer.parseInt(playListLength));
                 break;
         }
@@ -55,11 +55,11 @@ public class DailyPlaySharedPrefUtils {
     public static int getLengthOfPlayList() {
         int downloadOption = getDownloadOption();
         switch (downloadOption) {
-            case DailyMusicManager.DownloadOptions.TIME:
-                return SharedPref.getInt(TIME_OF_SONGS_TO_DOWNLOAD, DailyMusicManager.DEF_TIME_OF_PLAY_LIST);
-            case DailyMusicManager.DownloadOptions.SONGS:
+            case DailyPlayMusicManager.DownloadOptions.TIME:
+                return SharedPref.getInt(TIME_OF_SONGS_TO_DOWNLOAD, DailyPlayMusicManager.DEF_TIME_OF_PLAY_LIST);
+            case DailyPlayMusicManager.DownloadOptions.SONGS:
             default:
-                return SharedPref.getInt(NUMBER_OF_SONGS_TO_DOWNLOAD, DailyMusicManager.DEF_NUMBER_OF_SONGS);
+                return SharedPref.getInt(NUMBER_OF_SONGS_TO_DOWNLOAD, DailyPlayMusicManager.DEF_NUMBER_OF_SONGS);
         }
     }
 

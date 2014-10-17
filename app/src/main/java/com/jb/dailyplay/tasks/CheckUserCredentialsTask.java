@@ -4,7 +4,7 @@ import android.os.AsyncTask;
 import android.util.Log;
 
 import com.jb.dailyplay.listeners.CheckUserCredentialsListener;
-import com.jb.dailyplay.managers.DailyMusicManager;
+import com.jb.dailyplay.managers.DailyPlayMusicManager;
 import com.jb.dailyplay.utils.LogUtils;
 
 /**
@@ -18,7 +18,7 @@ public class CheckUserCredentialsTask extends AsyncTask<CheckUserCredentialsList
         mListener = listeners[0];
         boolean ret = true;
         try {
-            DailyMusicManager.getInstance().login();
+            DailyPlayMusicManager.getInstance().login();
         } catch(Exception e) {
             LogUtils.appendLog(e);
             ret = false;

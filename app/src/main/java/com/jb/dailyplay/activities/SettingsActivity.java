@@ -9,7 +9,7 @@ import android.widget.RadioButton;
 import android.widget.RadioGroup;
 
 import com.jb.dailyplay.R;
-import com.jb.dailyplay.managers.DailyMusicManager;
+import com.jb.dailyplay.managers.DailyPlayMusicManager;
 import com.jb.dailyplay.utils.DailyPlaySharedPrefUtils;
 
 /**
@@ -42,10 +42,10 @@ public class SettingsActivity extends Activity {
             public void onCheckedChanged(RadioGroup radioGroup, int radioButton) {
                 switch(radioButton) {
                     case R.id.download_by_songs:
-                        mDownloadOption = DailyMusicManager.DownloadOptions.SONGS;
+                        mDownloadOption = DailyPlayMusicManager.DownloadOptions.SONGS;
                         break;
                     case R.id.download_by_time:
-                        mDownloadOption = DailyMusicManager.DownloadOptions.TIME;
+                        mDownloadOption = DailyPlayMusicManager.DownloadOptions.TIME;
                         break;
                 }
                 setViewForDownloadOption(false);
@@ -71,10 +71,10 @@ public class SettingsActivity extends Activity {
         DailyPlaySharedPrefUtils.saveDownloadOption(mDownloadOption);
         String playListLength = "";
         switch(mDownloadOption) {
-            case DailyMusicManager.DownloadOptions.SONGS:
+            case DailyPlayMusicManager.DownloadOptions.SONGS:
                 playListLength = mNumberOfSongs.getText().toString();
                 break;
-            case DailyMusicManager.DownloadOptions.TIME:
+            case DailyPlayMusicManager.DownloadOptions.TIME:
                 playListLength = mTimeOfList.getText().toString();
                 break;
         }
@@ -92,7 +92,7 @@ public class SettingsActivity extends Activity {
 
     private void setViewForDownloadOption(final boolean setChecked) {
         switch(mDownloadOption) {
-            case DailyMusicManager.DownloadOptions.SONGS:
+            case DailyPlayMusicManager.DownloadOptions.SONGS:
                 downloadBySongsOptions.setVisibility(View.VISIBLE);
                 downloadByTimeOptions.setVisibility(View.GONE);
                 if (setChecked) {
@@ -101,7 +101,7 @@ public class SettingsActivity extends Activity {
                 }
 
                 break;
-            case DailyMusicManager.DownloadOptions.TIME:
+            case DailyPlayMusicManager.DownloadOptions.TIME:
                 downloadBySongsOptions.setVisibility(View.GONE);
                 downloadByTimeOptions.setVisibility(View.VISIBLE);
                 if (setChecked) {
