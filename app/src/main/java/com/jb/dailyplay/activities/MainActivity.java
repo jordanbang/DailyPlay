@@ -55,11 +55,11 @@ public class MainActivity extends Activity {
                 test();
             }
         });
-        promptForUserInformation(false);
+        promptForUserInformation(false, false);
     }
 
-    private void promptForUserInformation(boolean isReprompt) {
-        if (DailyPlaySharedPrefUtils.doesUserInformationExist()) {
+    private void promptForUserInformation(boolean isReprompt, final boolean isRelog) {
+        if (DailyPlaySharedPrefUtils.doesUserInformationExist() && !isRelog) {
             return;
         }
 
@@ -93,7 +93,7 @@ public class MainActivity extends Activity {
                             if (isSuccessful) {
                                 Toast.makeText(MainActivity.this, "Login Successful", Toast.LENGTH_SHORT);
                             } else {
-                                promptForUserInformation(true);
+                                promptForUserInformation(true, isRelog);
                             }
                         }
                     };
@@ -125,10 +125,14 @@ public class MainActivity extends Activity {
         // automatically handle clicks on the Home/Up button, so long
         // as you specify a parent activity in AndroidManifest.xml.
         int id = item.getItemId();
-        if (id == R.id.action_settings) {
-            Intent intent = new Intent(this, SettingsActivity.class);
-            startActivity(intent);
-            return true;
+        switch(id) {
+            case R.id.action_settings:
+                Intent intent = new Intent(this, SettingsActivity.class);
+                startActivity(intent);
+                return true;
+            case R.id.action_login:
+                promptForUserInformation(false, true);
+                break;
         }
         return super.onOptionsItemSelected(item);
     }
