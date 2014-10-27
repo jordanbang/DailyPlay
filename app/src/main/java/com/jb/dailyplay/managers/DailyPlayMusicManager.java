@@ -25,8 +25,6 @@ import java.lang.reflect.Type;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
-import java.util.List;
 import java.util.Random;
 
 /**
@@ -65,6 +63,10 @@ public class DailyPlayMusicManager {
     }
 
     private ArrayList<Song> getSongForRandomIndices(int numberOfSongs) {
+        if (numberOfSongs >= mSongList.size()) {
+            return mSongList;
+        }
+
         ArrayList<Song> songs = new ArrayList<Song>();
         for (int i = 0; i < numberOfSongs; i++) {
             Random rand = new Random();
@@ -79,15 +81,14 @@ public class DailyPlayMusicManager {
 
     private Collection<Song> getSongFromPlaylistLength(int timeOfPlayListMin) {
         ArrayList<Song> songsToDownload = new ArrayList<Song>();
-        List<Song> songList = (List<Song>) mSongList;
-        Collections.shuffle(songList);
-
-        int index = 0;
         while (timeOfPlayListMin > 0) {
-            Song songToBeAdded = songList.get(index);
+            Random rand = new Random();
+            Song songToBeAdded = mSongList.get(rand.nextInt(mSongCount));
+            while (songsToDownload.contains(songToBeAdded)) {
+                songToBeAdded = mSongList.get(rand.nextInt(mSongCount));
+            }
             songsToDownload.add(songToBeAdded);
             timeOfPlayListMin -= (songToBeAdded.getDurationMillis()/(60*1000));
-            index++;
         }
         return songsToDownload;
     }
@@ -120,19 +121,6 @@ public class DailyPlayMusicManager {
         }
         DailyPlaySharedPrefUtils.setDownloadedSongList("");
         scanMediaFiles(downloadedFiles, context);
-    }
-
-    private void getDownloadedFilesFromSharedPref() {
-        String oldDailyPlayList = DailyPlaySharedPrefUtils.getDownloadedSongList();
-        if (StringUtils.isEmptyString(oldDailyPlayList)) {
-            return;
-        }
-
-        Gson gson = new Gson();
-        ArrayList<SongFile> downloadedFiles = null;
-        Type type = new TypeToken<Collection<SongFile>>(){}.getType();
-        downloadedFiles = gson.fromJson(oldDailyPlayList, type);
-        mDownloadedFiles = downloadedFiles;
     }
 
     public Collection<SongFile> getDownloadedSongs() {
@@ -251,7 +239,6 @@ public class DailyPlayMusicManager {
         } catch (URISyntaxException e) {
             e.printStackTrace();
         }
-        DailyPlaySharedPrefUtils.saveDownloadOption(DownloadOptions.SONGS);
         getSongList();
     }
 }
