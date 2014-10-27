@@ -29,7 +29,9 @@ import java.util.Random;
 
 /**
  * Created by Jordan on 6/3/2014.
- * All functions that make network calls assume that they are being run on a background thread
+ * All functions that make network calls assume that they are being run on a background thread.
+ * In general, object should be made not on the UI thread, and continued to be used not on the UI thread,
+ * as there are accesses to SharePref/network calls/long loops that can stall.
  */
 public class DailyPlayMusicManager {
     public static final int DEF_NUMBER_OF_SONGS = 10;
@@ -62,7 +64,7 @@ public class DailyPlayMusicManager {
         mApi = new GoogleMusicAPI();
     }
 
-    private ArrayList<Song> getSongForRandomIndices(int numberOfSongs) {
+    private ArrayList<Song> getSongListForCount(int numberOfSongs) {
         if (numberOfSongs >= mSongList.size()) {
             return mSongList;
         }
@@ -79,9 +81,9 @@ public class DailyPlayMusicManager {
         return songs;
     }
 
-    private Collection<Song> getSongFromPlaylistLength(int timeOfPlayListMin) {
+    private Collection<Song> getSongListForTime(int timeOfPlayListMin) {
         ArrayList<Song> songsToDownload = new ArrayList<Song>();
-        while (timeOfPlayListMin > 0) {
+        while (timeOfPlayListMin > 0 && songsToDownload.size() != mSongList.size()) {
             Random rand = new Random();
             Song songToBeAdded = mSongList.get(rand.nextInt(mSongCount));
             while (songsToDownload.contains(songToBeAdded)) {
@@ -154,10 +156,10 @@ public class DailyPlayMusicManager {
         int playListLength = DailyPlaySharedPrefUtils.getLengthOfPlayList();
         switch(downloadOption) {
             case DownloadOptions.SONGS:
-                songs = getSongForRandomIndices(playListLength);
+                songs = getSongListForCount(playListLength);
                 break;
             case DownloadOptions.TIME:
-                songs = getSongFromPlaylistLength(playListLength);
+                songs = getSongListForTime(playListLength);
                 break;
             case -1:
                 throw(new IllegalArgumentException());
