@@ -188,14 +188,14 @@ public class DailyPlayMusicManager {
         DailyPlaySharedPrefUtils.setSongList(gson.toJson(mSongList));
     }
 
-    public void login() {
+    public void login() throws Exception {
         String username = SharedPref.getString(DailyPlaySharedPrefUtils.USERNAME);
         String password = SharedPref.getString(DailyPlaySharedPrefUtils.PASSWORD);
-        try {
-            mApi.login(username, password);
-        } catch (Exception e) {
-            Log.e("DailyPlay - login error", e.toString());
-        }
+        login(username, password);
+    }
+
+    public void login(String username, String password) throws Exception {
+        mApi.login(username, password);
     }
 
     private void loadSongListFromSharedPref() throws IOException, URISyntaxException {

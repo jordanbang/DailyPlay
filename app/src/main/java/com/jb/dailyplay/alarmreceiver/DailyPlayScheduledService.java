@@ -8,6 +8,7 @@ import android.content.Intent;
 import android.support.v4.app.NotificationCompat;
 import android.util.Log;
 
+import com.jb.dailyplay.GooglePlayMusicApi.impl.InvalidCredentialsException;
 import com.jb.dailyplay.R;
 import com.jb.dailyplay.activities.MainActivity;
 import com.jb.dailyplay.exceptions.NoSpaceException;
@@ -37,8 +38,8 @@ public class DailyPlayScheduledService extends IntentService{
     protected void onHandleIntent(Intent intent) {
         DailyPlaySharedPrefUtils.init(getApplication());
         DailyPlayMusicManager dailyPlayMusicManager = DailyPlayMusicManager.getInstance();
-        dailyPlayMusicManager.login();
         try {
+            dailyPlayMusicManager.login();
             dailyPlayMusicManager.getDailyPlayMusic(this);
             sendNotification("Songs successfully downloaded.  Enjoy your new DailyPlay list!");
         } catch(NoWifiException e) {
@@ -47,6 +48,9 @@ public class DailyPlayScheduledService extends IntentService{
         } catch(NoSpaceException e) {
             Log.e("DailyPlay - error in scheduled service", e.toString());
             sendNotification("Not enough space to download a new DailyPlay list");
+        } catch (InvalidCredentialsException e) {
+            Log.e("DailyPlay", "Error in scheduled service " + e.toString());
+            sendNotification("There was a problem with you credentials and your DailyPlay list could not be downloaded.  Please login again.");
         } catch (Exception e) {
             Log.e("DailyPlay - error in scheduled service", e.toString());
             LogUtils.appendLog(e);

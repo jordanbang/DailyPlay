@@ -21,6 +21,7 @@ import com.jb.dailyplay.adapters.SongListAdapter;
 import com.jb.dailyplay.alarmreceiver.DailyPlayAlarmReceiver;
 import com.jb.dailyplay.listeners.CheckUserCredentialsListener;
 import com.jb.dailyplay.managers.DailyPlayMusicManager;
+import com.jb.dailyplay.managers.LoginManager;
 import com.jb.dailyplay.models.SongFile;
 import com.jb.dailyplay.tasks.CheckUserCredentialsTask;
 import com.jb.dailyplay.utils.DailyPlaySharedPrefUtils;
@@ -55,61 +56,7 @@ public class MainActivity extends Activity {
                 test();
             }
         });
-        promptForUserInformation(false, false);
-    }
-
-    private void promptForUserInformation(boolean isReprompt, final boolean isRelog) {
-        if (DailyPlaySharedPrefUtils.doesUserInformationExist() && !isRelog) {
-            return;
-        }
-
-        AlertDialog.Builder builder = new AlertDialog.Builder(this);
-        String title = !isReprompt ? "Login" : "Login Again";
-        builder.setTitle(title);
-        LayoutInflater inflater = this.getLayoutInflater();
-        View view = inflater.inflate(R.layout.login_dialog, null);
-        final EditText usernameEditText = (EditText) view.findViewById(R.id.login_email);
-        final EditText passwordEditText = (EditText) view.findViewById(R.id.login_password);
-
-
-        builder.setView(view);
-        builder.setPositiveButton("Login", new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialogInterface, int id) {
-                String username = usernameEditText.getText().toString();
-                String password = passwordEditText.getText().toString();
-
-                if (StringUtils.isEmptyString(username) || !StringUtils.isValidEmail(username)) {
-                    usernameEditText.setError("Please enter valid email address.");
-                } else if (StringUtils.isEmptyString(password)) {
-                    passwordEditText.setError("Please enter your password.");
-                } else {
-                    dialogInterface.dismiss();
-                    SharedPref.setString(DailyPlaySharedPrefUtils.USERNAME, username);
-                    SharedPref.setString(DailyPlaySharedPrefUtils.PASSWORD, password);
-                    CheckUserCredentialsListener listener = new CheckUserCredentialsListener() {
-                        @Override
-                        public void onComplete(boolean isSuccessful) {
-                            if (isSuccessful) {
-                                Toast.makeText(MainActivity.this, "Login Successful", Toast.LENGTH_SHORT);
-                            } else {
-                                promptForUserInformation(true, isRelog);
-                            }
-                        }
-                    };
-                    new CheckUserCredentialsTask().execute(listener);
-                }
-            }
-        });
-
-        builder.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialogInterface, int i) {
-                dialogInterface.dismiss();
-            }
-        });
-
-        builder.create().show();
+        LoginManager.getManager(this).promptForUserInformationIfNoneExists();
     }
 
     @Override
@@ -131,7 +78,7 @@ public class MainActivity extends Activity {
                 startActivity(intent);
                 return true;
             case R.id.action_login:
-                promptForUserInformation(false, true);
+                LoginManager.getManager(this).promptForNewUserInformation();
                 break;
         }
         return super.onOptionsItemSelected(item);
@@ -156,8 +103,8 @@ public class MainActivity extends Activity {
             @Override
             public void run() {
                 DailyPlayMusicManager dailyPlayMusicManager = DailyPlayMusicManager.getInstance();
-                dailyPlayMusicManager.login();
                 try {
+                    dailyPlayMusicManager.login();
                     dailyPlayMusicManager.test();
                 } catch (Exception e) {
                     Log.e("DailyPlay - test error", e.toString());
