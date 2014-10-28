@@ -1,33 +1,24 @@
 package com.jb.dailyplay.activities;
 
 import android.app.Activity;
-import android.app.AlertDialog;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
-import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
-import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.jb.dailyplay.R;
 import com.jb.dailyplay.adapters.SongListAdapter;
 import com.jb.dailyplay.alarmreceiver.DailyPlayAlarmReceiver;
-import com.jb.dailyplay.listeners.CheckUserCredentialsListener;
 import com.jb.dailyplay.managers.DailyPlayMusicManager;
 import com.jb.dailyplay.managers.LoginManager;
 import com.jb.dailyplay.models.SongFile;
-import com.jb.dailyplay.tasks.CheckUserCredentialsTask;
 import com.jb.dailyplay.utils.DailyPlaySharedPrefUtils;
 import com.jb.dailyplay.utils.LogUtils;
-import com.jb.dailyplay.utils.SharedPref;
-import com.jb.dailyplay.utils.StringUtils;
 
 import java.util.Collection;
 

@@ -59,6 +59,7 @@ public class LoginManager {
         CheckUserCredentialsListener listener = new CheckUserCredentialsListener() {
             @Override
             public void onComplete(boolean isSuccessful) {
+                mContext.findViewById(R.id.progressBar).setVisibility(View.GONE);
                 if (isSuccessful) {
                     SharedPref.setString(DailyPlaySharedPrefUtils.PASSWORD, password);
                     SharedPref.setString(DailyPlaySharedPrefUtils.USERNAME, username);
@@ -115,6 +116,7 @@ public class LoginManager {
                 } else if (StringUtils.isEmptyString(password)) {
                     passwordEditText.setError("Please enter your password.");
                 } else {
+                    mContext.findViewById(R.id.progressBar).setVisibility(View.VISIBLE);
                     dialogInterface.dismiss();
                     login(username, password);
                 }

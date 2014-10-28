@@ -64,6 +64,26 @@ public class DailyPlayMusicManager {
         mApi = new GoogleMusicAPI();
     }
 
+    public void getDailyPlayMusic(Context context) throws Exception {
+        if (!ConnectionUtils.isConnectedWifi(context)) {
+            throw(new NoWifiException());
+        }
+
+        loadSongList();
+        Collection<Song> downloadList = getSongList();
+
+        if (!isFreeSpace(downloadList.size())) {
+            throw(new NoSpaceException());
+        }
+
+        deleteOldDailyPlayList(context);
+        Log.i("DailyPlay", "Starting to download songs");
+        mDownloadedFiles = mApi.downloadSongs(downloadList, context);
+        Log.i("DailyPlay", "Songs downloaded");
+        saveDailyPlayList();
+        scanMediaFiles(mDownloadedFiles, context);
+    }
+
     private ArrayList<Song> getSongListForCount(int numberOfSongs) {
         if (numberOfSongs >= mSongList.size()) {
             return mSongList;
@@ -127,27 +147,6 @@ public class DailyPlayMusicManager {
 
     public Collection<SongFile> getDownloadedSongs() {
         return mDownloadedFiles;
-    }
-
-    /*Below calls are synchronous, need to be run on a background thread*/
-    public void getDailyPlayMusic(Context context) throws Exception {
-        if (!ConnectionUtils.isConnectedWifi(context)) {
-            throw(new NoWifiException());
-        }
-
-        loadSongList();
-        Collection<Song> downloadList = getSongList();
-
-        if (!isFreeSpace(downloadList.size())) {
-            throw(new NoSpaceException());
-        }
-
-        deleteOldDailyPlayList(context);
-        Log.i("DailyPlay", "Starting to download songs");
-        mDownloadedFiles = mApi.downloadSongs(downloadList, context);
-        Log.i("DailyPlay", "Songs downloaded");
-        saveDailyPlayList();
-        scanMediaFiles(mDownloadedFiles, context);
     }
 
     private Collection<Song> getSongList() {
@@ -241,6 +240,9 @@ public class DailyPlayMusicManager {
         } catch (URISyntaxException e) {
             e.printStackTrace();
         }
-        getSongList();
+        Collection<Song> songs = getSongList();
+        for (Song song : songs) {
+            Log.i("DailyPlay", "Test - getSongList - song: " + song.getName() + " - " + song.getArtist());
+        }
     }
 }
