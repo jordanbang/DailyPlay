@@ -10,6 +10,7 @@ import android.widget.EditText;
 import android.widget.Toast;
 
 import com.jb.dailyplay.R;
+import com.jb.dailyplay.fragments.LoginDialogFragment;
 import com.jb.dailyplay.listeners.CheckUserCredentialsListener;
 import com.jb.dailyplay.tasks.CheckUserCredentialsTask;
 import com.jb.dailyplay.utils.DailyPlaySharedPrefUtils;
@@ -55,7 +56,7 @@ public class LoginManager {
      * @param username
      * @param password
      */
-    private void login(final String username, final String password) {
+    public void login(final String username, final String password) {
         CheckUserCredentialsListener listener = new CheckUserCredentialsListener() {
             @Override
             public void onComplete(boolean isSuccessful) {
@@ -96,40 +97,7 @@ public class LoginManager {
      * @param isTryAgain If true, then this is a "try again" at inputting password information.  Text will change.
      */
     public void promptForUserInformation(boolean isTryAgain) {
-        AlertDialog.Builder builder = new AlertDialog.Builder(mContext);
-        String title = !isTryAgain ? "Login" : "Login Failed.  Try Again";
-        builder.setTitle(title);
-        LayoutInflater inflater = mContext.getLayoutInflater();
-        View view = inflater.inflate(R.layout.login_dialog, null);
-        final EditText usernameEditText = (EditText) view.findViewById(R.id.login_email);
-        final EditText passwordEditText = (EditText) view.findViewById(R.id.login_password);
-
-        builder.setView(view);
-        builder.setPositiveButton("Login", new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialogInterface, int id) {
-                String username = usernameEditText.getText().toString();
-                String password = passwordEditText.getText().toString();
-
-                if (StringUtils.isEmptyString(username) || !StringUtils.isValidEmail(username)) {
-                    usernameEditText.setError("Please enter valid email address.");
-                } else if (StringUtils.isEmptyString(password)) {
-                    passwordEditText.setError("Please enter your password.");
-                } else {
-                    mContext.findViewById(R.id.progressBar).setVisibility(View.VISIBLE);
-                    dialogInterface.dismiss();
-                    login(username, password);
-                }
-            }
-        });
-
-        builder.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialogInterface, int i) {
-                dialogInterface.dismiss();
-            }
-        });
-
-        builder.create().show();
+        LoginDialogFragment fragment = LoginDialogFragment.newInstance(isTryAgain);
+        fragment.show(mContext.getFragmentManager(), "dialog");
     }
 }
