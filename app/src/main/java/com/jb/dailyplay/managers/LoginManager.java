@@ -1,12 +1,7 @@
 package com.jb.dailyplay.managers;
 
 import android.app.Activity;
-import android.app.AlertDialog;
-import android.content.Context;
-import android.content.DialogInterface;
-import android.view.LayoutInflater;
 import android.view.View;
-import android.widget.EditText;
 import android.widget.Toast;
 
 import com.jb.dailyplay.R;
@@ -15,7 +10,6 @@ import com.jb.dailyplay.listeners.CheckUserCredentialsListener;
 import com.jb.dailyplay.tasks.CheckUserCredentialsTask;
 import com.jb.dailyplay.utils.DailyPlaySharedPrefUtils;
 import com.jb.dailyplay.utils.SharedPref;
-import com.jb.dailyplay.utils.StringUtils;
 
 /**
  * Created by jordanbangia on 10/27/14.
@@ -64,7 +58,7 @@ public class LoginManager {
                 if (isSuccessful) {
                     SharedPref.setString(DailyPlaySharedPrefUtils.PASSWORD, password);
                     SharedPref.setString(DailyPlaySharedPrefUtils.USERNAME, username);
-                    Toast.makeText(mContext, "Login Successful", Toast.LENGTH_SHORT);
+                    Toast.makeText(mContext, "Login Successful", Toast.LENGTH_LONG);
                 } else {
                     promptForUserInformation(true);
                 }

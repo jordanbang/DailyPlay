@@ -7,18 +7,17 @@ import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.TextView;
 
-import com.jb.dailyplay.GooglePlayMusicApi.model.Song;
 import com.jb.dailyplay.R;
-import com.jb.dailyplay.models.SongFile;
+import com.jb.dailyplay.models.Song;
 
-import java.util.Collection;
+import java.util.ArrayList;
 
 /**
  * Created by Jordan on 7/8/2014.
  */
-public class SongListAdapter extends ArrayAdapter<SongFile> {
+public class SongListAdapter extends ArrayAdapter<Song> {
     private final Context mContext;
-    private SongFile[] mSongs;
+    private ArrayList<Song> mSongs;
 
     static class ViewHolder {
         public TextView titleView;
@@ -26,10 +25,10 @@ public class SongListAdapter extends ArrayAdapter<SongFile> {
         public TextView albumView;
     }
 
-    public SongListAdapter(Context context, Collection<SongFile> songs) {
-        super(context, R.layout.list_item_song);
+    public SongListAdapter(Context context, ArrayList<Song> songs) {
+        super(context, R.layout.list_item_song, songs);
         mContext = context;
-        mSongs = songs.toArray(new SongFile[songs.size()]);
+        mSongs = songs;
     }
 
     @Override
@@ -48,7 +47,7 @@ public class SongListAdapter extends ArrayAdapter<SongFile> {
         }
 
         ViewHolder holder = (ViewHolder) row.getTag();
-        Song song = (Song) mSongs[position].getSong();
+        Song song = mSongs.get(position);
         holder.titleView.setText(song.getTitle());
         holder.artistView.setText(song.getArtist());
         holder.albumView.setText(song.getAlbum());
@@ -56,8 +55,8 @@ public class SongListAdapter extends ArrayAdapter<SongFile> {
         return row;
     }
 
-    public void notifyDataSetChanged(Collection<SongFile> songs) {
-        mSongs = songs.toArray(new SongFile[songs.size()]);
+    public void notifyDataSetChanged(ArrayList<Song> songs) {
+        mSongs = songs;
         super.notifyDataSetChanged();
     }
 }

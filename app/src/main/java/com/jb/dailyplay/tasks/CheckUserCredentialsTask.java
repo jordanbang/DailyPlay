@@ -33,7 +33,7 @@ public class CheckUserCredentialsTask extends AsyncTask<Object, Void, Boolean> {
     @Override
     protected void onPostExecute(Boolean loginSuccessful) {
         super.onPostExecute(loginSuccessful);
-        Log.e("DailyPlay - Login Task", "login was successful = " + loginSuccessful);
+        Log.e("DailyPlay", "Login Task: login was successful = " + loginSuccessful);
         mListener.onComplete(loginSuccessful);
     }
 }

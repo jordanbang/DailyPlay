@@ -82,6 +82,7 @@ public class DailyPlayMusicManager {
         Log.i("DailyPlay", "Songs downloaded");
         saveDailyPlayList();
         scanMediaFiles(mDownloadedFiles, context);
+        Log.i("DailPlay", "Done downloading list");
     }
 
     private ArrayList<Song> getSongListForCount(int numberOfSongs) {
@@ -127,26 +128,38 @@ public class DailyPlayMusicManager {
     }
 
     private void deleteOldDailyPlayList(Context context) {
-        String oldDailyPlayList = DailyPlaySharedPrefUtils.getDownloadedSongList();
-        if (StringUtils.isEmptyString(oldDailyPlayList)) {
+        if (mDownloadedFiles == null) {
             return;
         }
 
-        Gson gson = new Gson();
-        Collection<SongFile> downloadedFiles = null;
-        Type type = new TypeToken<Collection<SongFile>>(){}.getType();
-        downloadedFiles = gson.fromJson(oldDailyPlayList, type);
-        for(SongFile downloadedFile : downloadedFiles) {
+        for(SongFile downloadedFile : mDownloadedFiles) {
             File file = downloadedFile.getFile();
             file.delete();
             Log.i("DailyPlay - Deleting file",  file.getName());
         }
         DailyPlaySharedPrefUtils.setDownloadedSongList("");
-        scanMediaFiles(downloadedFiles, context);
+        scanMediaFiles(mDownloadedFiles, context);
     }
 
     public Collection<SongFile> getDownloadedSongs() {
+        if (mDownloadedFiles == null) {
+            loadCurrentlyDownloadedList();
+        }
         return mDownloadedFiles;
+    }
+
+    public ArrayList<com.jb.dailyplay.models.Song> getDownloadedSongsAsSongs() {
+        getDownloadedSongs();
+        ArrayList<com.jb.dailyplay.models.Song> songs = new ArrayList<com.jb.dailyplay.models.Song>();
+        if (mDownloadedFiles != null) {
+            for (SongFile songFile : mDownloadedFiles) {
+                com.jb.dailyplay.models.Song song = new com.jb.dailyplay.models.Song(songFile.getSong().getTitle(),
+                        songFile.getSong().getArtist(),
+                        songFile.getSong().getAlbum());
+                songs.add(song);
+            }
+        }
+        return songs;
     }
 
     private Collection<Song> getSongList() {
@@ -177,6 +190,19 @@ public class DailyPlayMusicManager {
             Log.i("DailyPlay", "Downloaded song list");
         }
 
+    }
+
+    private void loadCurrentlyDownloadedList() {
+        if (mDownloadedFiles == null || mDownloadedFiles.size() == 0) {
+            String oldDailyPlayList = DailyPlaySharedPrefUtils.getDownloadedSongList();
+            if (StringUtils.isEmptyString(oldDailyPlayList)) {
+                return;
+            }
+            Gson gson = new Gson();
+            Type type = new TypeToken<Collection<SongFile>>() {
+            }.getType();
+            mDownloadedFiles = gson.fromJson(oldDailyPlayList, type);
+        }
     }
 
     private void downloadSongList() throws IOException, URISyntaxException {
@@ -232,17 +258,19 @@ public class DailyPlayMusicManager {
         DailyPlaySharedPrefUtils.setDownloadedSongList(gson.toJson(mDownloadedFiles));
     }
 
-    public void test() {
+    public void test(Context context) {
         try {
-            loadSongList();
+            getDailyPlayMusic(context);
         } catch (IOException e) {
             e.printStackTrace();
         } catch (URISyntaxException e) {
             e.printStackTrace();
+        } catch (Exception e) {
+            e.printStackTrace();
         }
-        Collection<Song> songs = getSongList();
-        for (Song song : songs) {
-            Log.i("DailyPlay", "Test - getSongList - song: " + song.getName() + " - " + song.getArtist());
-        }
+//        Collection<Song> songs = getSongList();
+//        for (Song song : songs) {
+//            Log.i("DailyPlay", "Test - getSongList - song: " + song.getName() + " - " + song.getArtist());
+//        }
     }
 }

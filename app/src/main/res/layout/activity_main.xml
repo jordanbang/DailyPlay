@@ -15,12 +15,6 @@
         android:translationZ="2dp"
         android:visibility="visible">
 
-        <TextView
-            android:text="@string/hello_world"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:id="@+id/update"/>
-
         <ListView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"

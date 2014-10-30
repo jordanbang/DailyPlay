@@ -9,22 +9,22 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ListView;
-import android.widget.TextView;
 
 import com.jb.dailyplay.R;
 import com.jb.dailyplay.adapters.SongListAdapter;
 import com.jb.dailyplay.alarmreceiver.DailyPlayAlarmReceiver;
+import com.jb.dailyplay.listeners.GetDownloadedSongListListener;
 import com.jb.dailyplay.managers.DailyPlayMusicManager;
 import com.jb.dailyplay.managers.LoginManager;
-import com.jb.dailyplay.models.SongFile;
+import com.jb.dailyplay.models.Song;
+import com.jb.dailyplay.tasks.GetDownloadedSongListTask;
 import com.jb.dailyplay.utils.DailyPlaySharedPrefUtils;
 import com.jb.dailyplay.utils.LogUtils;
 
-import java.util.Collection;
+import java.util.ArrayList;
 
 
 public class MainActivity extends Activity {
-    private TextView mUpdateTextView;
     private ListView mListView;
     private DailyPlayAlarmReceiver mAlarm = new DailyPlayAlarmReceiver();
 
@@ -33,12 +33,9 @@ public class MainActivity extends Activity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         DailyPlaySharedPrefUtils.init(getApplication());
-        mUpdateTextView = (TextView) findViewById(R.id.update);
 
         mListView = (ListView) findViewById(R.id.song_list);
         updateListView();
-        mAlarm.setAlarm(this);
-        LogUtils.appendLog("App boot @ " + System.currentTimeMillis());
 
         Button button = (Button) findViewById(R.id.test);
         button.setOnClickListener(new View.OnClickListener() {
@@ -47,6 +44,10 @@ public class MainActivity extends Activity {
                 test();
             }
         });
+
+
+        mAlarm.setAlarm(this);
+        LogUtils.appendLog("App boot @ " + System.currentTimeMillis());
         LoginManager.getManager(this).promptForUserInformationIfNoneExists();
     }
 
@@ -76,17 +77,20 @@ public class MainActivity extends Activity {
     }
 
     private void updateListView() {
-        Collection<SongFile> downloadedSongs = DailyPlayMusicManager.getInstance().getDownloadedSongs();
-        if (downloadedSongs == null) {
-            return;
-        }
-
-        if (mListView.getAdapter() == null) {
-            mListView.setAdapter(new SongListAdapter(this, downloadedSongs));
-        } else {
-            SongListAdapter adapter = (SongListAdapter) mListView.getAdapter();
-            adapter.notifyDataSetChanged(downloadedSongs);
-        }
+        GetDownloadedSongListListener listener = new GetDownloadedSongListListener() {
+            @Override
+            public void onComplete(ArrayList<Song> songs) {
+                SongListAdapter adapter;
+                if (mListView.getAdapter() == null) {
+                    adapter = new SongListAdapter(MainActivity.this, songs);
+                    mListView.setAdapter(adapter);
+                } else {
+                    adapter = (SongListAdapter) mListView.getAdapter();
+                }
+                adapter.notifyDataSetChanged(songs);
+            }
+        };
+        new GetDownloadedSongListTask().execute(listener);
     }
 
     private void test() {
@@ -96,7 +100,7 @@ public class MainActivity extends Activity {
                 DailyPlayMusicManager dailyPlayMusicManager = DailyPlayMusicManager.getInstance();
                 try {
                     dailyPlayMusicManager.login();
-                    dailyPlayMusicManager.test();
+                    dailyPlayMusicManager.test(MainActivity.this);
                 } catch (Exception e) {
                     Log.e("DailyPlay - test error", e.toString());
                     LogUtils.appendLog(e);
