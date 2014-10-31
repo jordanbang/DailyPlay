@@ -14,6 +14,7 @@ import com.jb.dailyplay.R;
 import com.jb.dailyplay.adapters.SongListAdapter;
 import com.jb.dailyplay.alarmreceiver.DailyPlayAlarmReceiver;
 import com.jb.dailyplay.listeners.GetDownloadedSongListListener;
+import com.jb.dailyplay.listeners.SongListOnItemClickListener;
 import com.jb.dailyplay.managers.DailyPlayMusicManager;
 import com.jb.dailyplay.managers.LoginManager;
 import com.jb.dailyplay.models.Song;
@@ -35,6 +36,7 @@ public class MainActivity extends Activity {
         DailyPlaySharedPrefUtils.init(getApplication());
 
         mListView = (ListView) findViewById(R.id.song_list);
+        mListView.setOnItemClickListener(new SongListOnItemClickListener(this));
         updateListView();
 
         Button button = (Button) findViewById(R.id.test);

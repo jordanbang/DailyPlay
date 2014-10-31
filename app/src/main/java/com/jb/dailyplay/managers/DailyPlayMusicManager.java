@@ -158,8 +158,7 @@ public class DailyPlayMusicManager {
         if (mDownloadedFiles != null) {
             for (SongFile songFile : mDownloadedFiles) {
                 com.jb.dailyplay.models.Song song = new com.jb.dailyplay.models.Song(songFile.getSong().getTitle(),
-                        songFile.getSong().getArtist(),
-                        songFile.getSong().getAlbum());
+                        songFile.getSong().getArtist(), songFile.getSong().getAlbum(), songFile.getUri());
                 songs.add(song);
             }
         }

@@ -1,5 +1,7 @@
 package com.jb.dailyplay.models;
 
+import android.net.Uri;
+
 import com.jb.dailyplay.GooglePlayMusicApi.model.Song;
 import com.jb.dailyplay.GooglePlayMusicApi.model.Tune;
 
@@ -32,6 +34,10 @@ public class SongFile extends Object {
 
     public Tune getSong() {
         return mSong;
+    }
+
+    public Uri getUri() {
+        return Uri.fromFile(mFile);
     }
 }
 
