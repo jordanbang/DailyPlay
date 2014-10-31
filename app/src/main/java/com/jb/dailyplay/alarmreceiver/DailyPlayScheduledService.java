@@ -3,6 +3,7 @@ package com.jb.dailyplay.alarmreceiver;
 import android.app.IntentService;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
+import android.support.v4.app.TaskStackBuilder;
 import android.content.Context;
 import android.content.Intent;
 import android.support.v4.app.NotificationCompat;
@@ -28,8 +29,6 @@ public class DailyPlayScheduledService extends IntentService{
     public static final String DAILY_PLAY_SCHEDULED_SERVICE = "DailyPlayScheduledService";
     public static final int NOTIFICATION_ID = 1;
 
-    private NotificationManager mNotificationManager;
-
     public DailyPlayScheduledService() {
         super(DAILY_PLAY_SCHEDULED_SERVICE);
     }
@@ -41,20 +40,20 @@ public class DailyPlayScheduledService extends IntentService{
         try {
             dailyPlayMusicManager.login();
             dailyPlayMusicManager.getDailyPlayMusic(this);
-            sendNotification("Songs successfully downloaded.  Enjoy your new DailyPlay list!");
+            sendNotification("DailyPlay list downloaded!", "Your songs were successfully downloaded.  Enjoy your new DailyPlay list!");
         } catch(NoWifiException e) {
             Log.e("DailyPlay - error in scheduled service", e.toString());
-            sendNotification("Your device was not connected to Wifi. We were unable to download a new DailyPlay list.");
+            sendNotification("Something went wrong.", "Your device was not connected to Wifi. We were unable to download a new DailyPlay list.");
         } catch(NoSpaceException e) {
             Log.e("DailyPlay - error in scheduled service", e.toString());
-            sendNotification("Not enough space to download a new DailyPlay list");
+            sendNotification("Something went wrong.", "There was not enough space to download a new DailyPlay list.  Try freeing up some space and downloading again.");
         } catch (InvalidCredentialsException e) {
             Log.e("DailyPlay", "Error in scheduled service " + e.toString());
-            sendNotification("There was a problem with you credentials and your DailyPlay list could not be downloaded.  Please login again.");
+            sendNotification("Something went wrong.", "There was a problem with you credentials and your DailyPlay list could not be downloaded.  Please login again.");
         } catch (Exception e) {
             Log.e("DailyPlay - error in scheduled service", e.toString());
             LogUtils.appendLog(e);
-            sendNotification("An error occurred while trying to download your DailyPlay list.");
+            sendNotification("Something went wrong.", "An error occurred while trying to download your DailyPlay list.");
         }
 
         Date date = new Date(System.currentTimeMillis());
@@ -63,15 +62,26 @@ public class DailyPlayScheduledService extends IntentService{
         DailyPlayAlarmReceiver.completeWakefulIntent(intent);
     }
 
-    private void sendNotification(String message) {
+    private void sendNotification(String title, String message) {
         if (!DailyPlaySharedPrefUtils.getShowNotifications()) {
             return;
         }
 
-        mNotificationManager = (NotificationManager) this.getSystemService(Context.NOTIFICATION_SERVICE);
-        PendingIntent contentIntent = PendingIntent.getActivity(this, 0, new Intent(this, MainActivity.class), 0);
         NotificationCompat.Builder builder = new NotificationCompat.Builder(this);
-        builder.setSmallIcon(R.drawable.ic_launcher).setContentTitle("DailyPlay list downloaded!").setStyle(new NotificationCompat.BigTextStyle().bigText(message)).setContentText(message);
-        mNotificationManager.notify(NOTIFICATION_ID, builder.build());
+        builder.setSmallIcon(R.drawable.ic_launcher)
+                .setContentTitle(title)
+                .setStyle(new NotificationCompat.BigTextStyle().bigText(message))
+                .setContentText(message)
+                .setAutoCancel(true)
+                .setVisibility(NotificationCompat.VISIBILITY_PUBLIC);
+
+        Intent result = new Intent(this, MainActivity.class);
+        TaskStackBuilder stackBuilder = TaskStackBuilder.create(this);
+        stackBuilder.addParentStack(MainActivity.class);
+        stackBuilder.addNextIntent(result);
+        PendingIntent contentIntent = stackBuilder.getPendingIntent(0, PendingIntent.FLAG_UPDATE_CURRENT);
+        builder.setContentIntent(contentIntent);
+        NotificationManager notificationManager = (NotificationManager) this.getSystemService(Context.NOTIFICATION_SERVICE);
+        notificationManager.notify(NOTIFICATION_ID, builder.build());
     }
 }
