@@ -58,7 +58,7 @@ public class LoginManager {
                 if (isSuccessful) {
                     SharedPref.setString(DailyPlaySharedPrefUtils.PASSWORD, password);
                     SharedPref.setString(DailyPlaySharedPrefUtils.USERNAME, username);
-                    Toast.makeText(mContext, "Login Successful", Toast.LENGTH_LONG);
+                    Toast.makeText(mContext, "Login Successful", Toast.LENGTH_LONG).show();
                 } else {
                     promptForUserInformation(true);
                 }
