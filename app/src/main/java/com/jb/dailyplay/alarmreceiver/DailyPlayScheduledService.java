@@ -64,6 +64,10 @@ public class DailyPlayScheduledService extends IntentService{
     }
 
     private void sendNotification(String message) {
+        if (!DailyPlaySharedPrefUtils.getShowNotifications()) {
+            return;
+        }
+
         mNotificationManager = (NotificationManager) this.getSystemService(Context.NOTIFICATION_SERVICE);
         PendingIntent contentIntent = PendingIntent.getActivity(this, 0, new Intent(this, MainActivity.class), 0);
         NotificationCompat.Builder builder = new NotificationCompat.Builder(this);

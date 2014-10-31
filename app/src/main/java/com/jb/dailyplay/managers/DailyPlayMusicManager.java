@@ -132,6 +132,10 @@ public class DailyPlayMusicManager {
             return;
         }
 
+        if (DailyPlaySharedPrefUtils.getKeepPlayList()) {
+            return;
+        }
+
         for(SongFile downloadedFile : mDownloadedFiles) {
             File file = downloadedFile.getFile();
             file.delete();
