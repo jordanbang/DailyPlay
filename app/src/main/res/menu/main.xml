@@ -11,4 +11,10 @@
           android:title="Login"
           android:orderInCategory="200"
           app:showAsAction="always"/>
+
+    <!-- TODO: Remove this item -->
+    <item android:id="@+id/test"
+          android:title="Test"
+          android:orderInCategory="300"
+          app:showAsAction="always"/>
 </menu>

@@ -261,6 +261,7 @@ public class DailyPlayMusicManager {
         DailyPlaySharedPrefUtils.setDownloadedSongList(gson.toJson(mDownloadedFiles));
     }
 
+    //TODO: Remove this test function
     public void test(Context context) {
         try {
             getDailyPlayMusic(context);

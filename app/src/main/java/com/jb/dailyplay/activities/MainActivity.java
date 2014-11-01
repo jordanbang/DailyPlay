@@ -6,8 +6,6 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.view.View;
-import android.widget.Button;
 import android.widget.ListView;
 
 import com.jb.dailyplay.R;
@@ -39,15 +37,6 @@ public class MainActivity extends Activity {
         mListView.setOnItemClickListener(new SongListOnItemClickListener(this));
         updateListView();
 
-        Button button = (Button) findViewById(R.id.test);
-        button.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                test();
-            }
-        });
-
-
         mAlarm.setAlarm(this);
         LogUtils.appendLog("App boot @ " + System.currentTimeMillis());
         LoginManager.getManager(this).promptForUserInformationIfNoneExists();
@@ -74,6 +63,10 @@ public class MainActivity extends Activity {
             case R.id.action_login:
                 LoginManager.getManager(this).promptForNewUserInformation();
                 break;
+            //TODO: Remove this test item
+            case R.id.test:
+                test();
+                break;
         }
         return super.onOptionsItemSelected(item);
     }
@@ -95,6 +88,7 @@ public class MainActivity extends Activity {
         new GetDownloadedSongListTask().execute(listener);
     }
 
+    //TODO: Remove this function
     private void test() {
         Thread thread = new Thread(new Runnable() {
             @Override
