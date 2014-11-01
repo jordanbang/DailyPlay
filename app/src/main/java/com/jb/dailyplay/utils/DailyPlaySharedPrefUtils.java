@@ -36,12 +36,11 @@ public class DailyPlaySharedPrefUtils {
         return SharedPref.getInt(DOWNLOAD_OPTION, DailyPlayMusicManager.DownloadOptions.SONGS);
     }
 
-    public static void saveLengthOfPlayList(String playListLength) {
+    public static void saveLengthOfPlayList(String playListLength, int downloadOption) {
         if (StringUtils.isEmptyString(playListLength)) {
             return;
         }
 
-        int downloadOption = getDownloadOption();
         switch (downloadOption) {
             case DailyPlayMusicManager.DownloadOptions.SONGS:
                 SharedPref.setInt(NUMBER_OF_SONGS_TO_DOWNLOAD, Integer.parseInt(playListLength));
@@ -54,7 +53,11 @@ public class DailyPlaySharedPrefUtils {
 
     public static int getLengthOfPlayList() {
         int downloadOption = getDownloadOption();
-        switch (downloadOption) {
+        return getLengthOfPlayListForDownloadOption(downloadOption);
+    }
+
+    public static int getLengthOfPlayListForDownloadOption(int option) {
+        switch (option) {
             case DailyPlayMusicManager.DownloadOptions.TIME:
                 return SharedPref.getInt(TIME_OF_SONGS_TO_DOWNLOAD, DailyPlayMusicManager.DEF_TIME_OF_PLAY_LIST);
             case DailyPlayMusicManager.DownloadOptions.SONGS:
@@ -100,7 +103,7 @@ public class DailyPlaySharedPrefUtils {
     }
 
     public static boolean getKeepPlayList() {
-        return SharedPref.getBoolean(KEEP_PLAYLIST, true);
+        return SharedPref.getBoolean(KEEP_PLAYLIST, false);
     }
 
     public static boolean doesUserInformationExist() {
@@ -111,5 +114,13 @@ public class DailyPlaySharedPrefUtils {
             return false;
         }
         return true;
+    }
+
+    public static void saveLengthOfPlayListTime(String playListLengthTime) {
+        saveLengthOfPlayList(playListLengthTime, DailyPlayMusicManager.DownloadOptions.TIME);
+    }
+
+    public static void saveLengthOfPlayListNumber(String playListLengthNumber) {
+        saveLengthOfPlayList(playListLengthNumber, DailyPlayMusicManager.DownloadOptions.SONGS);
     }
 }

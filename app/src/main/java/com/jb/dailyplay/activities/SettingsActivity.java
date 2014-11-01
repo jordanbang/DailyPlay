@@ -24,6 +24,9 @@ public class SettingsActivity extends Activity {
     EditText mNumberOfSongs;
     EditText mTimeOfList;
 
+    private String mNumberOfSongsString;
+    private String mTimeOfListString;
+
     private int mDownloadOption;
     private View downloadBySongsOptions;
     private View downloadByTimeOptions;
@@ -43,9 +46,11 @@ public class SettingsActivity extends Activity {
                 switch(radioButton) {
                     case R.id.download_by_songs:
                         mDownloadOption = DailyPlayMusicManager.DownloadOptions.SONGS;
+                        mNumberOfSongsString = mNumberOfSongs.getText().toString();
                         break;
                     case R.id.download_by_time:
                         mDownloadOption = DailyPlayMusicManager.DownloadOptions.TIME;
+                        mTimeOfListString = mTimeOfList.getText().toString();
                         break;
                 }
                 setViewForDownloadOption(false);
@@ -69,16 +74,10 @@ public class SettingsActivity extends Activity {
 
     private void saveInfo() {
         DailyPlaySharedPrefUtils.saveDownloadOption(mDownloadOption);
-        String playListLength = "";
-        switch(mDownloadOption) {
-            case DailyPlayMusicManager.DownloadOptions.SONGS:
-                playListLength = mNumberOfSongs.getText().toString();
-                break;
-            case DailyPlayMusicManager.DownloadOptions.TIME:
-                playListLength = mTimeOfList.getText().toString();
-                break;
-        }
-        DailyPlaySharedPrefUtils.saveLengthOfPlayList(playListLength);
+        String playListLengthNumber = mNumberOfSongs.getText().toString();
+        String playListLengthTime = mTimeOfList.getText().toString();
+        DailyPlaySharedPrefUtils.saveLengthOfPlayListNumber(playListLengthNumber);
+        DailyPlaySharedPrefUtils.saveLengthOfPlayListTime(playListLengthTime);
         DailyPlaySharedPrefUtils.saveShowNotifications(mShowNotifications.isChecked());
         DailyPlaySharedPrefUtils.saveKeepPlayList(mKeepPlayList.isChecked());
     }
@@ -88,6 +87,10 @@ public class SettingsActivity extends Activity {
         setViewForDownloadOption(true);
         mShowNotifications.setChecked(DailyPlaySharedPrefUtils.getShowNotifications());
         mKeepPlayList.setChecked(DailyPlaySharedPrefUtils.getKeepPlayList());
+        mNumberOfSongsString = Integer.toString(DailyPlaySharedPrefUtils.getLengthOfPlayListForDownloadOption(DailyPlayMusicManager.DownloadOptions.SONGS));
+        mTimeOfListString = Integer.toString(DailyPlaySharedPrefUtils.getLengthOfPlayListForDownloadOption(DailyPlayMusicManager.DownloadOptions.TIME));
+        mNumberOfSongs.setText(mNumberOfSongsString);
+        mTimeOfList.setText(mTimeOfListString);
     }
 
     private void setViewForDownloadOption(final boolean setChecked) {
