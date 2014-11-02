@@ -37,6 +37,9 @@ public class SongFile extends Object {
     }
 
     public Uri getUri() {
+        if (mFile == null) {
+            return null;
+        }
         return Uri.fromFile(mFile);
     }
 }

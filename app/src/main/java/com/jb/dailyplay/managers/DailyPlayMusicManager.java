@@ -117,12 +117,15 @@ public class DailyPlayMusicManager {
     }
 
     private void scanMediaFiles(final Collection<SongFile> downloadFiles, Context context) {
-        for (SongFile file : downloadFiles) {
-            Uri uri = Uri.fromFile(file.getFile());
-            Intent mediaScanIntent = new Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE);
-            mediaScanIntent.setData(uri);
-            context.sendBroadcast(mediaScanIntent);
-            Log.i("DailyPlay - Scanned file", file.getFile().getName());
+        for (SongFile songFile : downloadFiles) {
+            File file = songFile.getFile();
+            if (file != null) {
+                Uri uri = Uri.fromFile(file);
+                Intent mediaScanIntent = new Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE);
+                mediaScanIntent.setData(uri);
+                context.sendBroadcast(mediaScanIntent);
+                Log.i("DailyPlay - Scanned file", file.getName());
+            }
         }
 
     }
