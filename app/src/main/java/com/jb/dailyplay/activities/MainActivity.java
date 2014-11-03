@@ -1,8 +1,13 @@
 package com.jb.dailyplay.activities;
 
 import android.app.Activity;
+import android.app.NotificationManager;
+import android.app.PendingIntent;
+import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.v4.app.NotificationCompat;
+import android.support.v4.app.TaskStackBuilder;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -90,20 +95,44 @@ public class MainActivity extends Activity {
 
     //TODO: Remove this function
     private void test() {
-        Thread thread = new Thread(new Runnable() {
-            @Override
-            public void run() {
-                DailyPlayMusicManager dailyPlayMusicManager = DailyPlayMusicManager.getInstance();
-                try {
-                    dailyPlayMusicManager.login();
-                    dailyPlayMusicManager.test(MainActivity.this);
-                } catch (Exception e) {
-                    Log.e("DailyPlay - test error", e.toString());
-                    LogUtils.appendLog(e);
-                }
-            }
-        });
-        thread.start();
+//        Thread thread = new Thread(new Runnable() {
+//            @Override
+//            public void run() {
+//                DailyPlayMusicManager dailyPlayMusicManager = DailyPlayMusicManager.getInstance();
+//                try {
+//                    dailyPlayMusicManager.login();
+//                    dailyPlayMusicManager.test(MainActivity.this);
+//                } catch (Exception e) {
+//                    Log.e("DailyPlay - test error", e.toString());
+//                    LogUtils.appendLog(e);
+//                }
+//            }
+//        });
+//        thread.start();
+        sendNotification("Hi", "Testing");
+    }
+
+    private void sendNotification(String title, String message) {
+        if (!DailyPlaySharedPrefUtils.getShowNotifications()) {
+            return;
+        }
+
+        NotificationCompat.Builder builder = new NotificationCompat.Builder(this);
+        builder.setSmallIcon(R.drawable.ic_notification)
+                .setContentTitle(title)
+                .setStyle(new NotificationCompat.BigTextStyle().bigText(message))
+                .setContentText(message)
+                .setAutoCancel(true)
+                .setVisibility(NotificationCompat.VISIBILITY_PUBLIC);
+
+        Intent result = new Intent(this, MainActivity.class);
+        TaskStackBuilder stackBuilder = TaskStackBuilder.create(this);
+        stackBuilder.addParentStack(MainActivity.class);
+        stackBuilder.addNextIntent(result);
+        PendingIntent contentIntent = stackBuilder.getPendingIntent(0, PendingIntent.FLAG_UPDATE_CURRENT);
+        builder.setContentIntent(contentIntent);
+        NotificationManager notificationManager = (NotificationManager) this.getSystemService(Context.NOTIFICATION_SERVICE);
+        notificationManager.notify(1, builder.build());
     }
 }
 
