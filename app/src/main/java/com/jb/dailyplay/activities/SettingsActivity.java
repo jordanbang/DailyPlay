@@ -85,8 +85,8 @@ public class SettingsActivity extends Activity {
     private void loadSavedSettings() {
         mDownloadOption = DailyPlaySharedPrefUtils.getDownloadOption();
         setViewForDownloadOption(true);
-        mShowNotifications.setChecked(DailyPlaySharedPrefUtils.getShowNotifications());
-        mKeepPlayList.setChecked(DailyPlaySharedPrefUtils.getKeepPlayList());
+        mShowNotifications.setChecked(DailyPlaySharedPrefUtils.shouldShowNotifications());
+        mKeepPlayList.setChecked(DailyPlaySharedPrefUtils.shouldKeepPlaylist());
         mNumberOfSongsString = Integer.toString(DailyPlaySharedPrefUtils.getLengthOfPlayListForDownloadOption(DailyPlayMusicManager.DownloadOptions.SONGS));
         mTimeOfListString = Integer.toString(DailyPlaySharedPrefUtils.getLengthOfPlayListForDownloadOption(DailyPlayMusicManager.DownloadOptions.TIME));
         mNumberOfSongs.setText(mNumberOfSongsString);

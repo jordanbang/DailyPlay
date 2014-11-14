@@ -63,7 +63,7 @@ public class DailyPlayScheduledService extends IntentService{
     }
 
     private void sendNotification(String title, String message) {
-        if (!DailyPlaySharedPrefUtils.getShowNotifications()) {
+        if (!DailyPlaySharedPrefUtils.shouldShowNotifications()) {
             return;
         }
 

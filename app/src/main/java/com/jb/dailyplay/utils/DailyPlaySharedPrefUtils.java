@@ -98,11 +98,11 @@ public class DailyPlaySharedPrefUtils {
         return SharedPref.getString(SONG_LIST);
     }
 
-    public static boolean getShowNotifications() {
+    public static boolean shouldShowNotifications() {
         return SharedPref.getBoolean(SHOW_NOTIFICATIONS, true);
     }
 
-    public static boolean getKeepPlayList() {
+    public static boolean shouldKeepPlaylist() {
         return SharedPref.getBoolean(KEEP_PLAYLIST, false);
     }
 

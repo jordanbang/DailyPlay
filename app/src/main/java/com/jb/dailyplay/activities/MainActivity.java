@@ -95,25 +95,25 @@ public class MainActivity extends Activity {
 
     //TODO: Remove this function
     private void test() {
-//        Thread thread = new Thread(new Runnable() {
-//            @Override
-//            public void run() {
-//                DailyPlayMusicManager dailyPlayMusicManager = DailyPlayMusicManager.getInstance();
-//                try {
-//                    dailyPlayMusicManager.login();
-//                    dailyPlayMusicManager.test(MainActivity.this);
-//                } catch (Exception e) {
-//                    Log.e("DailyPlay - test error", e.toString());
-//                    LogUtils.appendLog(e);
-//                }
-//            }
-//        });
-//        thread.start();
-        sendNotification("Hi", "Testing");
+        Thread thread = new Thread(new Runnable() {
+            @Override
+            public void run() {
+                DailyPlayMusicManager dailyPlayMusicManager = DailyPlayMusicManager.getInstance();
+                try {
+                    dailyPlayMusicManager.login();
+                    dailyPlayMusicManager.test(MainActivity.this);
+                } catch (Exception e) {
+                    Log.e("DailyPlay - test error", e.toString());
+                    LogUtils.appendLog(e);
+                }
+            }
+        });
+        thread.start();
+//        sendNotification("Hi", "Testing");
     }
 
     private void sendNotification(String title, String message) {
-        if (!DailyPlaySharedPrefUtils.getShowNotifications()) {
+        if (!DailyPlaySharedPrefUtils.shouldShowNotifications()) {
             return;
         }
 

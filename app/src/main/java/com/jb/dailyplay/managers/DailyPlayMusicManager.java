@@ -135,7 +135,7 @@ public class DailyPlayMusicManager {
             return;
         }
 
-        if (DailyPlaySharedPrefUtils.getKeepPlayList()) {
+        if (DailyPlaySharedPrefUtils.shouldKeepPlaylist()) {
             return;
         }
 
