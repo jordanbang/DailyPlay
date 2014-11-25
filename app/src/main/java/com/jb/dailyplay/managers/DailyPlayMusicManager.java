@@ -132,17 +132,22 @@ public class DailyPlayMusicManager {
 
     private void deleteOldDailyPlayList(Context context) {
         if (mDownloadedFiles == null) {
-            return;
+            Log.i("DailyPlay", "tried to delete files but the downloaded list was null");
+            getDownloadedSongs();
         }
 
         if (DailyPlaySharedPrefUtils.shouldKeepPlaylist()) {
+            Log.i("DailyPlay", "tried to delete files, but option was checked to keep them");
             return;
         }
 
         for(SongFile downloadedFile : mDownloadedFiles) {
             File file = downloadedFile.getFile();
-            file.delete();
-            Log.i("DailyPlay - Deleting file",  file.getName());
+            if (file.delete()) {
+                Log.i("DailyPlay - Deleted file",  file.getName());
+            } else {
+                Log.i("DailyPlay - File not deleted",  file.getName());
+            };
         }
         DailyPlaySharedPrefUtils.setDownloadedSongList("");
         scanMediaFiles(mDownloadedFiles, context);

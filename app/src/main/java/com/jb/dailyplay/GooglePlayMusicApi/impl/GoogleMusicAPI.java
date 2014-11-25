@@ -152,7 +152,6 @@ public class GoogleMusicAPI implements IGoogleMusicAPI {
                 if (!Strings.isNullOrEmpty(gson.fromJson(values.get(36), String.class))) {
                     s.setUrl("https:" + gson.fromJson(values.get(36), String.class));
                 }
-                Log.i("DailyPlay - song added", s.getName());
                 chunkedCollection.add(s);
             }
         }
