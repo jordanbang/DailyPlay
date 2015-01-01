@@ -39,7 +39,7 @@ public class DailyPlayScheduledService extends IntentService{
         DailyPlayMusicManager dailyPlayMusicManager = DailyPlayMusicManager.getInstance();
         try {
             dailyPlayMusicManager.login();
-            dailyPlayMusicManager.getDailyPlayMusic(this);
+            dailyPlayMusicManager.getDailyPlayMusic(getApplicationContext());
             sendNotification("DailyPlay list downloaded!", "Your songs were successfully downloaded.  Enjoy your new DailyPlay list!");
         } catch(NoWifiException e) {
             Log.e("DailyPlay - error in scheduled service", e.toString());

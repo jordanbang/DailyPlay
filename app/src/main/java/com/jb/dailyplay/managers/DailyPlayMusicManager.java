@@ -1,9 +1,11 @@
 package com.jb.dailyplay.managers;
 
+import android.content.ContentResolver;
 import android.content.Context;
-import android.content.Intent;
+import android.media.MediaScannerConnection;
 import android.net.Uri;
 import android.os.Environment;
+import android.provider.MediaStore;
 import android.text.format.DateUtils;
 import android.util.Log;
 
@@ -116,29 +118,50 @@ public class DailyPlayMusicManager {
         return songsToDownload;
     }
 
+    /**
+     * Adds the newly downloaded music files to the systems, so that music player apps know about the songs.
+     * @param downloadFiles The files to be scanned.
+     * @param context Context is necessary to get the media scanner.
+     */
     private void scanMediaFiles(final Collection<SongFile> downloadFiles, Context context) {
+        ArrayList<String> pathsToAdd = new ArrayList<String>(downloadFiles.size());
         for (SongFile songFile : downloadFiles) {
             File file = songFile.getFile();
             if (file != null) {
-                Uri uri = Uri.fromFile(file);
-                Intent mediaScanIntent = new Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE);
-                mediaScanIntent.setData(uri);
-                context.sendBroadcast(mediaScanIntent);
-                Log.i("DailyPlay - Scanned file", file.getName());
+                pathsToAdd.add(file.getAbsolutePath());
             }
         }
 
+        String[] pathsToAddStringArray = pathsToAdd.toArray(new String[pathsToAdd.size()]);
+
+        MediaScannerConnection.scanFile(context, pathsToAddStringArray, null, new MediaScannerConnection.OnScanCompletedListener() {
+            @Override
+            public void onScanCompleted(String path, Uri uri) {
+                Log.i("DailyPlay - Scanned file added", path);
+            }
+        });
+
     }
 
+    /**
+     * Deletes the old DailyPlay list from the device.  Uses the loaded list from mDownloadedFiles (which should contain the current list of downloaded files, prior to downloading a new list.
+     * It first checks the mDownloadedFiles is not null, to make sure that the list has been loaded from memory.  Then it checks the parameter of whether the list should actually be deleted or not,
+     * based on user preferences.  Finally, it goes through and deletes the files, then updates the Audio Media Store content resolver with the fact that the files are deleted, and sets the downloaded
+     * song list to empty.
+     * @param context Required for using the content resolver.
+     */
     private void deleteOldDailyPlayList(Context context) {
-        if (mDownloadedFiles == null) {
-            Log.i("DailyPlay", "tried to delete files but the downloaded list was null");
-            getDownloadedSongs();
-        }
-
         if (DailyPlaySharedPrefUtils.shouldKeepPlaylist()) {
             Log.i("DailyPlay", "tried to delete files, but option was checked to keep them");
             return;
+        }
+
+        if (mDownloadedFiles == null) {
+            Log.i("DailyPlay", "tried to delete files but the downloaded list was null");
+            getDownloadedSongs();
+            if (mDownloadedFiles == null) {
+                return;
+            }
         }
 
         for(SongFile downloadedFile : mDownloadedFiles) {
@@ -148,9 +171,10 @@ public class DailyPlayMusicManager {
             } else {
                 Log.i("DailyPlay - File not deleted",  file.getName());
             };
+            ContentResolver resolver = context.getContentResolver();
+            resolver.delete(MediaStore.Audio.Media.EXTERNAL_CONTENT_URI, MediaStore.Audio.Media.DATA + "=?", new String[]{file.getAbsolutePath()});
         }
         DailyPlaySharedPrefUtils.setDownloadedSongList("");
-        scanMediaFiles(mDownloadedFiles, context);
     }
 
     public Collection<SongFile> getDownloadedSongs() {
@@ -210,8 +234,7 @@ public class DailyPlayMusicManager {
                 return;
             }
             Gson gson = new Gson();
-            Type type = new TypeToken<Collection<SongFile>>() {
-            }.getType();
+            Type type = new TypeToken<Collection<SongFile>>() {}.getType();
             mDownloadedFiles = gson.fromJson(oldDailyPlayList, type);
         }
     }
@@ -244,7 +267,6 @@ public class DailyPlayMusicManager {
             mSongList = gson.fromJson(songListAsString, type);
             mSongCount = mSongList.size();
         }
-
     }
 
     private boolean songListIsOutDated() {
