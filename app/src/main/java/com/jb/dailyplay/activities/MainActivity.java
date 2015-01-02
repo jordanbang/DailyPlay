@@ -65,9 +65,10 @@ public class MainActivity extends Activity {
                 Intent intent = new Intent(this, SettingsActivity.class);
                 startActivity(intent);
                 return true;
-            case R.id.action_login:
-                LoginManager.getManager(this).promptForNewUserInformation();
-                break;
+            case R.id.action_logout:
+                LoginManager.getManager(this).logout();
+                recreate();
+                return true;
             //TODO: Remove this test item
             case R.id.test:
                 test();

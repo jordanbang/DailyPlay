@@ -150,7 +150,7 @@ public class DailyPlayMusicManager {
      * song list to empty.
      * @param context Required for using the content resolver.
      */
-    private void deleteOldDailyPlayList(Context context) {
+    public void deleteOldDailyPlayList(Context context) {
         if (DailyPlaySharedPrefUtils.shouldKeepPlaylist()) {
             Log.i("DailyPlay", "tried to delete files, but option was checked to keep them");
             return;

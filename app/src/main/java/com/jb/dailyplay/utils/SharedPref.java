@@ -55,4 +55,9 @@ public class SharedPref {
     public static boolean getBoolean(String VarName, boolean def) {
         return settings.getBoolean(VarName, def);
     }
+
+    public static void emptySharedPrefs() {
+        editor.clear();
+        editor.commit();
+    }
 }

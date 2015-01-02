@@ -94,4 +94,9 @@ public class LoginManager {
         LoginDialogFragment fragment = LoginDialogFragment.newInstance(isTryAgain);
         fragment.show(mContext.getFragmentManager(), "dialog");
     }
+
+    public void logout() {
+        SharedPref.emptySharedPrefs();
+        DailyPlayMusicManager.getInstance().deleteOldDailyPlayList(mContext);
+    }
 }
