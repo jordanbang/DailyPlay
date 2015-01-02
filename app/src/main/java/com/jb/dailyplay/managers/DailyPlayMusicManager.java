@@ -18,7 +18,6 @@ import com.jb.dailyplay.exceptions.NoWifiException;
 import com.jb.dailyplay.models.SongFile;
 import com.jb.dailyplay.utils.ConnectionUtils;
 import com.jb.dailyplay.utils.DailyPlaySharedPrefUtils;
-import com.jb.dailyplay.utils.SharedPref;
 import com.jb.dailyplay.utils.StringUtils;
 
 import java.io.File;
@@ -248,8 +247,8 @@ public class DailyPlayMusicManager {
     }
 
     public void login() throws Exception {
-        String username = SharedPref.getString(DailyPlaySharedPrefUtils.USERNAME);
-        String password = SharedPref.getString(DailyPlaySharedPrefUtils.PASSWORD);
+        String username = DailyPlaySharedPrefUtils.getUsername();
+        String password = DailyPlaySharedPrefUtils.getPassword();
         login(username, password);
     }
 

@@ -123,4 +123,28 @@ public class DailyPlaySharedPrefUtils {
     public static void saveLengthOfPlayListNumber(String playListLengthNumber) {
         saveLengthOfPlayList(playListLengthNumber, DailyPlayMusicManager.DownloadOptions.SONGS);
     }
+
+    public static void setLoginInformation(String password, String username) {
+        try {
+            SharedPref.setString(DailyPlaySharedPrefUtils.PASSWORD, CryptoUtils.encrypt(username, password));
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        SharedPref.setString(DailyPlaySharedPrefUtils.USERNAME, username);
+    }
+
+    public static String getUsername() {
+        return SharedPref.getString(DailyPlaySharedPrefUtils.USERNAME);
+    }
+
+    public static String getPassword() {
+        String password = SharedPref.getString(DailyPlaySharedPrefUtils.PASSWORD);
+        String username = getUsername();
+        try {
+            return CryptoUtils.decrypt(username, password);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return "";
+    }
 }
