@@ -77,9 +77,10 @@ public class DailyPlayMusicManager {
             throw(new NoSpaceException());
         }
 
+        getDownloadedSongs();
         deleteOldDailyPlayList(context);
         Log.i("DailyPlay", "Starting to download songs");
-        mDownloadedFiles = mApi.downloadSongs(downloadList, context);
+        mDownloadedFiles.addAll(mApi.downloadSongs(downloadList, context));
         Log.i("DailyPlay", "Songs downloaded");
         saveDailyPlayList();
         scanMediaFiles(mDownloadedFiles, context);
@@ -173,6 +174,7 @@ public class DailyPlayMusicManager {
             ContentResolver resolver = context.getContentResolver();
             resolver.delete(MediaStore.Audio.Media.EXTERNAL_CONTENT_URI, MediaStore.Audio.Media.DATA + "=?", new String[]{file.getAbsolutePath()});
         }
+        mDownloadedFiles.clear();
         DailyPlaySharedPrefUtils.setDownloadedSongList("");
     }
 
@@ -235,6 +237,8 @@ public class DailyPlayMusicManager {
             Gson gson = new Gson();
             Type type = new TypeToken<Collection<SongFile>>() {}.getType();
             mDownloadedFiles = gson.fromJson(oldDailyPlayList, type);
+        } else {
+            mDownloadedFiles = new ArrayList<SongFile>();
         }
     }
 
