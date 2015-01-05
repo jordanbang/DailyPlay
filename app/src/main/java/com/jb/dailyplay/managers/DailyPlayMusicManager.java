@@ -80,7 +80,8 @@ public class DailyPlayMusicManager {
         getDownloadedSongs();
         deleteOldDailyPlayList(context);
         Log.i("DailyPlay", "Starting to download songs");
-        mDownloadedFiles.addAll(mApi.downloadSongs(downloadList, context));
+        Collection<SongFile> songs = mApi.downloadSongs(downloadList, context);
+        mDownloadedFiles.addAll(songs);
         Log.i("DailyPlay", "Songs downloaded");
         saveDailyPlayList();
         scanMediaFiles(mDownloadedFiles, context);
@@ -229,17 +230,14 @@ public class DailyPlayMusicManager {
     }
 
     private void loadCurrentlyDownloadedList() {
-        if (mDownloadedFiles == null || mDownloadedFiles.size() == 0) {
-            String oldDailyPlayList = DailyPlaySharedPrefUtils.getDownloadedSongList();
-            if (StringUtils.isEmptyString(oldDailyPlayList)) {
-                return;
-            }
-            Gson gson = new Gson();
-            Type type = new TypeToken<Collection<SongFile>>() {}.getType();
-            mDownloadedFiles = gson.fromJson(oldDailyPlayList, type);
-        } else {
+        String oldDailyPlayList = DailyPlaySharedPrefUtils.getDownloadedSongList();
+        if (StringUtils.isEmptyString(oldDailyPlayList)) {
             mDownloadedFiles = new ArrayList<SongFile>();
+            return;
         }
+        Gson gson = new Gson();
+        Type type = new TypeToken<Collection<SongFile>>() {}.getType();
+        mDownloadedFiles = gson.fromJson(oldDailyPlayList, type);
     }
 
     private void downloadSongList() throws IOException, URISyntaxException {

@@ -3,10 +3,10 @@ package com.jb.dailyplay.alarmreceiver;
 import android.app.IntentService;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
-import android.support.v4.app.TaskStackBuilder;
 import android.content.Context;
 import android.content.Intent;
 import android.support.v4.app.NotificationCompat;
+import android.support.v4.app.TaskStackBuilder;
 import android.util.Log;
 
 import com.jb.dailyplay.GooglePlayMusicApi.impl.InvalidCredentialsException;
@@ -43,15 +43,19 @@ public class DailyPlayScheduledService extends IntentService{
             sendNotification("DailyPlay list downloaded!", "Your songs were successfully downloaded.  Enjoy your new DailyPlay list!");
         } catch(NoWifiException e) {
             Log.e("DailyPlay - error in scheduled service", e.toString());
+            e.printStackTrace();
             sendNotification("Something went wrong.", "Your device was not connected to Wifi. We were unable to download a new DailyPlay list.");
         } catch(NoSpaceException e) {
             Log.e("DailyPlay - error in scheduled service", e.toString());
+            e.printStackTrace();
             sendNotification("Something went wrong.", "There was not enough space to download a new DailyPlay list.  Try freeing up some space and downloading again.");
         } catch (InvalidCredentialsException e) {
             Log.e("DailyPlay", "Error in scheduled service " + e.toString());
+            e.printStackTrace();
             sendNotification("Something went wrong.", "There was a problem with you credentials and your DailyPlay list could not be downloaded.  Please login again.");
         } catch (Exception e) {
             Log.e("DailyPlay - error in scheduled service", e.toString());
+            e.printStackTrace();
             LogUtils.appendLog(e);
             sendNotification("Something went wrong.", "An error occurred while trying to download your DailyPlay list.");
         }

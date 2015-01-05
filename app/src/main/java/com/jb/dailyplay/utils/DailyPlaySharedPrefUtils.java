@@ -20,6 +20,7 @@ public class DailyPlaySharedPrefUtils {
     public static final String KEEP_PLAYLIST = "keep_playlist";
     public static final String USERNAME = "username";
     public static final String PASSWORD = "password";
+    public static final String SALT = "salt";
 
     private DailyPlaySharedPrefUtils() {
     }
@@ -126,7 +127,12 @@ public class DailyPlaySharedPrefUtils {
 
     public static void setLoginInformation(String password, String username) {
         try {
-            SharedPref.setString(DailyPlaySharedPrefUtils.PASSWORD, CryptoUtils.encrypt(username, password));
+            AesCbcWithIntegrity.SecretKeys key;
+            String salt = AesCbcWithIntegrity.saltString(AesCbcWithIntegrity.generateSalt());
+            key = AesCbcWithIntegrity.generateKeyFromPassword(username, salt);
+            AesCbcWithIntegrity.CipherTextIvMac civ = AesCbcWithIntegrity.encrypt(password, key);
+            SharedPref.setString(DailyPlaySharedPrefUtils.PASSWORD, civ.toString());
+            SharedPref.setString(DailyPlaySharedPrefUtils.SALT, salt);
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -140,8 +146,10 @@ public class DailyPlaySharedPrefUtils {
     public static String getPassword() {
         String password = SharedPref.getString(DailyPlaySharedPrefUtils.PASSWORD);
         String username = getUsername();
+        String salt = SharedPref.getString(DailyPlaySharedPrefUtils.SALT);
         try {
-            return CryptoUtils.decrypt(username, password);
+            AesCbcWithIntegrity.SecretKeys key = AesCbcWithIntegrity.generateKeyFromPassword(username, salt);
+            return AesCbcWithIntegrity.decryptString(new AesCbcWithIntegrity.CipherTextIvMac(password), key);
         } catch (Exception e) {
             e.printStackTrace();
         }
