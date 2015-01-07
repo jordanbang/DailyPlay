@@ -1,55 +1,145 @@
-<!doctype html>
+<!DOCTYPE html>
+<html lang="en">
 
-<html>
-    <head>
-    	<meta charset="utf-8">
-    	<title>DailyPlay</title>
-    	<link rel="stylesheet" href="css/style.css" type="text/css"/>
-    	<link rel="stylesheet" href="css/bootstrap.min.css" type="text/css"/>
-    </head>
+<head>
 
-    <body>
-    	<div class ="hero-unit">
-    		<div class="container-fluid">
-	        	<h1>DailyPlay</h1>
-	        	<img src="web_images/dailyplay_icon.png" style="width:200px;height:200px">
-	        </div>
-	    </div>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="DailyPlay Android Application">
+    <meta name="author" content="Jordan Bangia">
 
-	    <div class="container-fluid">
-			<h3>Your Personal Daily Music Playlist</h3>
-        	<p>Phones don't have the capacity for your entire library, and trying to choose a list of songs to keep on your device at all times can be difficult.  Over time, those few songs become stale and you become bored of listening to them.  Constantly having to change the songs is an uncessary hassle.</p>
+    <title>DailyPlay</title>
+
+    <!-- Bootstrap Core CSS -->
+    <link href="css/bootstrap.min.css" rel="stylesheet">
+
+    <!-- Custom CSS -->
+    <link href="css/business-frontpage.css" rel="stylesheet">
+
+    <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
+    <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+    <!--[if lt IE 9]>
+        <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+        <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
+    <![endif]-->
+
+</head>
+
+<body>
+
+    <!-- Navigation 
+    <nav class="navbar navbar-inverse navbar-fixed-top" role="navigation">
+        <div class="container">
+            <!-- Brand and toggle get grouped for better mobile display
+            <div class="navbar-header">
+                <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1">
+                    <span class="sr-only">Toggle navigation</span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                </button>
+                <a class="navbar-brand" href="#">Start Bootstrap</a>
+            </div>
+            <!-- Collect the nav links, forms, and other content for toggling
+            <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+                <ul class="nav navbar-nav">
+                    <li>
+                        <a href="#">About</a>
+                    </li>
+                    <li>
+                        <a href="#">Services</a>
+                    </li>
+                    <li>
+                        <a href="#">Contact</a>
+                    </li>
+                </ul>
+            </div>
+            <!-- /.navbar-collapse 
         </div>
+        <!-- /.container 
+    </nav> -->
 
-        <div class="container-fluid">
-        	<div class="row">
-        		<div class ="span3">
-        			<h4>A new playlist every day means your commute music never gets old.</h4>
-        		</div>
-        		<div class="span3">
-        			<h4>Download songs at night while at home on WiFi, so no unecessary data charges.</h4>
-        		</div>
-        		<div class="span3">
-        			<h4>You set the limit, so you get the perfect length playlist.</h4>
-        		</div>
-        		<div class="span3">
-        			<h4>Uses your Google Play Music Library to make your playlist personalized.</h4>
-        		</div>
-        	</div>
+    <!-- Image Background Page Header -->
+    <!-- Note: The background image is set within the business-casual.css file. -->
+    <header class="business-header">
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-12">
+                    <h1 class="tagline">DailyPlay</h1>
+                </div>
+            </div>
         </div>
+    </header>
 
-        <div class ="container-fluid" >
-        	<h2>DailyPlay is your personal daily music playlist.</h2>
-        	<p>Check it out on the Google Play Store.</a>.</p>
-        	<p>Picture for google paly store link.</p>
-        </div>
+    <!-- Page Content -->
+    <div class="container">
 
-        <!-- fill this in with icons -->
-        <div class="footer"> 
-        	<p>Github</p>
-        	<p>Email</p>
-        	<p>Developer Website</p>
+        <hr>
+
+        <div class="row">
+            <div class="col-sm-8">
+                <h2>Your Personal Daily Music Playlist</h2>
+                <p>Phones don't have the capacity for your entire library, and trying to choose a list of songs to keep on your device at all times can be difficult.  Over time, those few songs become stale and you become bored of listening to them.  Constantly having to change the songs is an uncessary hassle.</p>
+                <p>DailyPlay is an Android application that downloads a new playlist of music everday.  It randomly chooses and downloads a number of songs, so that you get different music each day.  Keep your commute music exciting, and never let your library get stale.</p>
+                <p>
+                    <a class="btn btn-default btn-lg" href="#">Find it on GooglePlay Store</a>
+                </p>
+            </div>
+            <div class="col-sm-4">
+                <h2>Contact</h2>
+                <address>
+                    <a href="http://jordanbang.github.io" target=_blank><img src="web_images/jordanbangia_logo.png" style="width:100px;height:100px"></a>
+                    <br>
+                    <br>
+                    <abbr title="Email">E:</abbr> <a href="mailto:#">jordan.bangia@gmail.com</a>
+                </address>
+            </div>
         </div>
-    </body>
+        <!-- /.row -->
+
+        <hr>
+
+        <div class="row">
+            <div class="col-sm-4">
+                <img class="img-circle img-responsive img-center" src="http://placehold.it/300x300" alt="">
+                <h2>It's Your Music</h2>
+                <p>You probably have a huge music library.  Let's face it, it doesn't fit on your phone, but it probably fits on the cloud.  DailyPlay downloads your songs from your Google Play Music Library, so the playlist you get made from your own personal music collection.</p>
+            </div>
+            <div class="col-sm-4">
+                <img class="img-circle img-responsive img-center" src="http://placehold.it/300x300" alt="">
+                <h2>No Data. No Problem!</h2>
+                <p>DailyPlay downloads the music at night as to use your Wi-Fi, so that there are no unecessary data charges.  If you don't have access to data while travelling (RIP subway users), then even better.  Since your songs are downloaded the night before, your new music is ready for your morning commute.</p>
+            </div>
+            <div class="col-sm-4">
+                <img class="img-circle img-responsive img-center" src="http://placehold.it/300x300" alt="">
+                <h2>The Perfect Length</h2>
+                <p>30 minute commute? Then download 30 minutes of new music everday.  Need 10 songs for while at the gym?  Then download by the exact amount of music you need.  The option is yours, but either way you get the perfect length playlist.</p>
+            </div>
+        </div>
+        <!-- /.row -->
+
+        <hr>
+
+        <!-- Footer -->
+        <footer>
+            <div class="row">
+                <div class="col-lg-12">
+                    <p>Copyright &copy; Jordan Bangia 2015</p>
+                </div>
+            </div>
+            <!-- /.row -->
+        </footer>
+
+    </div>
+    <!-- /.container -->
+
+    <!-- jQuery -->
+    <script src="js/jquery.js"></script>
+
+    <!-- Bootstrap Core JavaScript -->
+    <script src="js/bootstrap.min.js"></script>
+
+</body>
 
 </html>
