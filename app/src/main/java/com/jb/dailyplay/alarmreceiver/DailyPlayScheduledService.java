@@ -36,6 +36,7 @@ public class DailyPlayScheduledService extends IntentService{
     @Override
     protected void onHandleIntent(Intent intent) {
         DailyPlaySharedPrefUtils.init(getApplication());
+        sendNotification("DailyPlay", "Starting to download your new DailyPlay list.");
         DailyPlayMusicManager dailyPlayMusicManager = DailyPlayMusicManager.getInstance();
         try {
             dailyPlayMusicManager.login();

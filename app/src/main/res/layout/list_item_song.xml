@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
     android:orientation="vertical" 
-    android:padding="5dp">
+    android:padding="5dp"
+    android:layout_height="wrap_content">
 
     <TextView
         android:id="@+id/list_item_title"
@@ -11,11 +11,12 @@
         android:layout_height="wrap_content"
         android:textAppearance="?android:attr/textAppearanceMedium"
         android:lines="1"
-        android:text="What are Friends For?"/>
+        android:text="Alexithymia"/>
 
     <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content" >
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
 
         <TextView
             android:id="@+id/list_item_artist"
@@ -24,7 +25,7 @@
             android:layout_weight="0.5"
             android:ellipsize="end"
             android:lines="1"
-            android:text="Freshman 15"/>
+            android:text="Anberlin"/>
 
         <TextView
             android:id="@+id/list_item_album"
@@ -33,7 +34,7 @@
             android:layout_weight="0.5"
             android:ellipsize="end"
             android:lines="1"
-            android:text="Throw Up Your Hands for One Night Stands"/>
+            android:text="Cities"/>
 
     </LinearLayout>
 
