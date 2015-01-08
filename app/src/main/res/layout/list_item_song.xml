@@ -11,7 +11,7 @@
         android:layout_height="wrap_content"
         android:textAppearance="?android:attr/textAppearanceMedium"
         android:lines="1"
-        android:text="Alexithymia"/>
+        android:text=""/>
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -25,7 +25,7 @@
             android:layout_weight="0.5"
             android:ellipsize="end"
             android:lines="1"
-            android:text="Anberlin"/>
+            android:text=""/>
 
         <TextView
             android:id="@+id/list_item_album"
@@ -34,7 +34,7 @@
             android:layout_weight="0.5"
             android:ellipsize="end"
             android:lines="1"
-            android:text="Cities"/>
+            android:text=""/>
 
     </LinearLayout>
 
