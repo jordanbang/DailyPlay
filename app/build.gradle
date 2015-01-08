@@ -4,6 +4,7 @@ android {
     compileSdkVersion 21
     buildToolsVersion '19.1.0'
     defaultConfig {
+        applicationId "com.daily.play"
         minSdkVersion 14
         targetSdkVersion 21
         versionCode 1

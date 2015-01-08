@@ -5,6 +5,8 @@ ADDED from AndroidManifest.xml:2:1
 		ADDED from AndroidManifest.xml:2:11
 	package
 		ADDED from AndroidManifest.xml:3:5
+		INJECTED from AndroidManifest.xml:0:0
+		INJECTED from AndroidManifest.xml:0:0
 	android:versionName
 		INJECTED from AndroidManifest.xml:0:0
 		INJECTED from AndroidManifest.xml:0:0
@@ -25,7 +27,7 @@ MERGED from com.android.support:support-v4:21.0.3:16:5
 		ADDED from AndroidManifest.xml:7:9
 	android:theme
 		ADDED from AndroidManifest.xml:9:9
-activity#com.jb.dailyplay.activities.MainActivity
+activity#com.daily.play.activities.MainActivity
 ADDED from AndroidManifest.xml:13:9
 	android:label
 		ADDED from AndroidManifest.xml:15:13
@@ -41,17 +43,17 @@ category#android.intent.category.LAUNCHER
 ADDED from AndroidManifest.xml:18:17
 	android:name
 		ADDED from AndroidManifest.xml:18:27
-activity#com.jb.dailyplay.activities.SettingsActivity
+activity#com.daily.play.activities.SettingsActivity
 ADDED from AndroidManifest.xml:21:9
 	android:label
 		ADDED from AndroidManifest.xml:22:19
 	android:name
 		ADDED from AndroidManifest.xml:21:19
-receiver#com.jb.dailyplay.alarmreceiver.DailyPlayAlarmReceiver
+receiver#com.daily.play.alarmreceiver.DailyPlayAlarmReceiver
 ADDED from AndroidManifest.xml:24:9
 	android:name
 		ADDED from AndroidManifest.xml:24:19
-receiver#com.jb.dailyplay.alarmreceiver.DailyPlayBootReceiver
+receiver#com.daily.play.alarmreceiver.DailyPlayBootReceiver
 ADDED from AndroidManifest.xml:25:9
 	android:enabled
 		ADDED from AndroidManifest.xml:26:19
@@ -63,7 +65,7 @@ action#android.intent.action.BOOT_COMPLETED
 ADDED from AndroidManifest.xml:28:17
 	android:name
 		ADDED from AndroidManifest.xml:28:25
-service#com.jb.dailyplay.alarmreceiver.DailyPlayScheduledService
+service#com.daily.play.alarmreceiver.DailyPlayScheduledService
 ADDED from AndroidManifest.xml:31:9
 	android:name
 		ADDED from AndroidManifest.xml:31:18
