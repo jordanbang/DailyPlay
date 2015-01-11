@@ -12,5 +12,7 @@
     <string name="keep_old_playlist">Keep old DailyPlay lists\n(old songs won\'t be removed)</string>
     <string name="title_activity_information">InformationActivity</string>
     <string name="info_title">Welcome to DailyPlay!</string>
+    <string name="empty_list">You haven\'t downloaded a DailyPlay list yet.  Wait till tomorrow morning, and check back to see your new list of music.</string>
+    <string name="loading_list">Loading your DailyPlay list...</string>
 
 </resources>

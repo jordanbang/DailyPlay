@@ -13,6 +13,7 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.ListView;
+import android.widget.TextView;
 
 import com.daily.play.R;
 import com.daily.play.adapters.SongListAdapter;
@@ -42,6 +43,7 @@ public class MainActivity extends Activity {
 
         mListView = (ListView) findViewById(R.id.song_list);
         mListView.setOnItemClickListener(new SongListOnItemClickListener(this));
+        mListView.setEmptyView(findViewById(R.id.empty_list));
         updateListView();
 
         mAlarm.setAlarm(this);
@@ -99,6 +101,10 @@ public class MainActivity extends Activity {
                     adapter = (SongListAdapter) mListView.getAdapter();
                 }
                 adapter.notifyDataSetChanged(songs);
+                if (adapter.isEmpty()) {
+                    TextView emptyView = (TextView) findViewById(R.id.empty_list);
+                    emptyView.setText(R.string.empty_list);
+                }
             }
         };
         new GetDownloadedSongListTask().execute(listener);
