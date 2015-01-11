@@ -16,10 +16,4 @@
           android:title="Info"
           android:orderInCategory="300"
           app:showAsAction="always"/>
-
-    <!-- TODO: Remove this item -->
-    <item android:id="@+id/test"
-          android:title="Test"
-          android:orderInCategory="400"
-          app:showAsAction="never"/>
 </menu>

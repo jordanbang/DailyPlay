@@ -83,10 +83,6 @@ public class MainActivity extends Activity {
                 InformationDialogFragment infoDialogFragment = InformationDialogFragment.newInstance(false);
                 infoDialogFragment.show(fm, "info_dialog_fragment");
                 return true;
-            //TODO: Remove this test item
-            case R.id.test:
-                test();
-                break;
         }
         return super.onOptionsItemSelected(item);
     }
