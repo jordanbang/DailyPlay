@@ -1,0 +1,46 @@
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+                xmlns:tools="http://schemas.android.com/tools"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:padding="15dp"
+                tools:context="com.daily.play.fragments.InformationDialogFragment">
+
+    <LinearLayout
+        android:orientation="vertical"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+        <TextView
+            android:text="DailyPlay is an Android application that downloads a new playlist of music from your Google Play Music library every night, so that in the morning you have new music to listen to on your device.  The playlist created is made up of a selection of random songs from your Google Play Music library.\n"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"/>
+
+        <TextView
+            android:text="To use DailyPlay, you will need a Google Account with music on your Google Play Music profile.\n"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"/>
+
+        <TextView
+            android:text="Remember, DailyPlay acts mostly as a background tool, downloading music for use within your default music player.  Music gets downloaded at 1 AM, so you may not see anything in the app till the next day.\n"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"/>
+
+        <LinearLayout
+            android:id="@+id/information_login_content"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+            <TextView
+                android:text="If this sounds all good, then login, set up the length of your DailyPlay list, and start rediscovering your music library.\n"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"/>
+
+            <Button
+                android:text="Login"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:id="@+id/login_button"/>
+        </LinearLayout>
+    </LinearLayout>
+
+</ScrollView>

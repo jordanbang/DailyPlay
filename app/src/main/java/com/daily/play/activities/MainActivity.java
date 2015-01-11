@@ -1,6 +1,7 @@
 package com.daily.play.activities;
 
 import android.app.Activity;
+import android.app.FragmentManager;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.content.Context;
@@ -13,8 +14,10 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.ListView;
 
+import com.daily.play.R;
 import com.daily.play.adapters.SongListAdapter;
 import com.daily.play.alarmreceiver.DailyPlayAlarmReceiver;
+import com.daily.play.fragments.InformationDialogFragment;
 import com.daily.play.listeners.GetDownloadedSongListListener;
 import com.daily.play.listeners.SongListOnItemClickListener;
 import com.daily.play.managers.DailyPlayMusicManager;
@@ -23,7 +26,6 @@ import com.daily.play.models.Song;
 import com.daily.play.tasks.GetDownloadedSongListTask;
 import com.daily.play.utils.DailyPlaySharedPrefUtils;
 import com.daily.play.utils.LogUtils;
-import com.daily.play.R;
 
 import java.util.ArrayList;
 
@@ -44,7 +46,14 @@ public class MainActivity extends Activity {
 
         mAlarm.setAlarm(this);
         LogUtils.appendLog("App boot @ " + System.currentTimeMillis());
-        LoginManager.getManager(this).promptForUserInformationIfNoneExists();
+
+        if(DailyPlaySharedPrefUtils.isFirstOpen()) {
+            FragmentManager fm = this.getFragmentManager();
+            InformationDialogFragment infoDialogFragment = InformationDialogFragment.newInstance(true);
+            infoDialogFragment.show(fm, "info_dialog_fragment");
+        } else {
+            LoginManager.getManager(this).promptForUserInformationIfNoneExists();
+        }
     }
 
     @Override
@@ -68,6 +77,11 @@ public class MainActivity extends Activity {
             case R.id.action_logout:
                 LoginManager.getManager(this).logout();
                 recreate();
+                return true;
+            case R.id.action_info:
+                FragmentManager fm = this.getFragmentManager();
+                InformationDialogFragment infoDialogFragment = InformationDialogFragment.newInstance(false);
+                infoDialogFragment.show(fm, "info_dialog_fragment");
                 return true;
             //TODO: Remove this test item
             case R.id.test:

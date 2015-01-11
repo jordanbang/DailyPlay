@@ -21,6 +21,7 @@ public class DailyPlaySharedPrefUtils {
     public static final String USERNAME = "username";
     public static final String PASSWORD = "password";
     public static final String SALT = "salt";
+    public static final String FIRST_OPEN = "first_open";
 
     private DailyPlaySharedPrefUtils() {
     }
@@ -154,5 +155,13 @@ public class DailyPlaySharedPrefUtils {
             e.printStackTrace();
         }
         return "";
+    }
+
+    public static boolean isFirstOpen() {
+        return SharedPref.getBoolean(FIRST_OPEN, true);
+    }
+
+    public static void setIsFirstOpen() {
+        SharedPref.setBoolean(FIRST_OPEN, false);
     }
 }

@@ -12,9 +12,14 @@
           android:orderInCategory="200"
           app:showAsAction="always"/>
 
+    <item android:id="@+id/action_info"
+          android:title="Info"
+          android:orderInCategory="300"
+          app:showAsAction="always"/>
+
     <!-- TODO: Remove this item -->
     <item android:id="@+id/test"
           android:title="Test"
-          android:orderInCategory="300"
-          app:showAsAction="always"/>
+          android:orderInCategory="400"
+          app:showAsAction="never"/>
 </menu>

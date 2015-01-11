@@ -10,5 +10,7 @@
     <string name="check_box_songs_by_time">Download songs by time</string>
     <string name="show_notification">Show Notifications</string>
     <string name="keep_old_playlist">Keep old DailyPlay lists\n(old songs won\'t be removed)</string>
+    <string name="title_activity_information">InformationActivity</string>
+    <string name="info_title">Welcome to DailyPlay!</string>
 
 </resources>
