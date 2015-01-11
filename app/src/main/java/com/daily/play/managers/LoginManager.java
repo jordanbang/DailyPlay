@@ -56,7 +56,6 @@ public class LoginManager {
             public void onComplete(boolean isSuccessful) {
                 mContext.findViewById(R.id.progressBar).setVisibility(View.GONE);
                 if (isSuccessful) {
-                    DailyPlaySharedPrefUtils.setLoginInformation(password, username);
                     Toast.makeText(mContext, "Login Successful", Toast.LENGTH_LONG).show();
                 } else {
                     promptForUserInformation(true);

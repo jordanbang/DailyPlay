@@ -5,6 +5,7 @@ import android.util.Log;
 
 import com.daily.play.listeners.CheckUserCredentialsListener;
 import com.daily.play.managers.DailyPlayMusicManager;
+import com.daily.play.utils.DailyPlaySharedPrefUtils;
 import com.daily.play.utils.LogUtils;
 
 /**
@@ -26,6 +27,9 @@ public class CheckUserCredentialsTask extends AsyncTask<Object, Void, Boolean> {
             LogUtils.appendLog(e);
             Log.e("DailyPlay", e.toString());
             ret = false;
+        }
+        if (ret) {
+            DailyPlaySharedPrefUtils.setLoginInformation(password, username);
         }
         return ret;
     }
