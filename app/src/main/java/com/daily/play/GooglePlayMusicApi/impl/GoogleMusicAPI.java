@@ -130,28 +130,9 @@ public class GoogleMusicAPI implements IGoogleMusicAPI {
                 final Song s = new Song();
                 s.setId(gson.fromJson(values.get(0), String.class));
                 s.setTitle(gson.fromJson(values.get(1), String.class));
-                s.setName(gson.fromJson(values.get(1), String.class));
-                if (!Strings.isNullOrEmpty(gson.fromJson(values.get(2),
-                        String.class))) {
-                    s.setAlbumArtUrl("https:"
-                            + gson.fromJson(values.get(2), String.class));
-                }
                 s.setArtist(gson.fromJson(values.get(3), String.class));
                 s.setAlbum(gson.fromJson(values.get(4), String.class));
-                s.setAlbumArtist(gson.fromJson(values.get(5), String.class));
-                s.setGenre(gson.fromJson(values.get(11), String.class));
                 s.setDurationMillis(gson.fromJson(values.get(13), Long.class));
-                s.setType(gson.fromJson(values.get(16), Integer.class));
-                s.setYear(gson.fromJson(values.get(18), Integer.class));
-                s.setPlaycount(gson.fromJson(values.get(22), Integer.class));
-                s.setRating(gson.fromJson(values.get(23), String.class));
-
-                if (!Strings.isNullOrEmpty(gson.fromJson(values.get(24), String.class))) {
-                    s.setCreationDate(gson.fromJson(values.get(24), Float.class) / 1000);
-                }
-                if (!Strings.isNullOrEmpty(gson.fromJson(values.get(36), String.class))) {
-                    s.setUrl("https:" + gson.fromJson(values.get(36), String.class));
-                }
                 chunkedCollection.add(s);
             }
         }
