@@ -38,7 +38,7 @@ import java.util.Collection;
  */
 public interface IGoogleMusicAPI
 {
-    final String HTTPS_WWW_GOOGLE_COM_ACCOUNTS_CLIENT_LOGIN = "https://www.google.com/accounts/ClientLogin";
+    final String HTTPS_WWW_GOOGLE_COM_ACCOUNTS_CLIENT_LOGIN = "https://accounts.google.com/ServiceLoginAuth";
     final String HTTPS_PLAY_GOOGLE_COM_MUSIC_SERVICES_SEARCH = "https://play.google.com/music/services/search";
     // final String HTTPS_PLAY_GOOGLE_COM_MUSIC_SERVICES_LOADALLTRACKS =
     // "https://play.google.com/music/services/loadalltracks";
