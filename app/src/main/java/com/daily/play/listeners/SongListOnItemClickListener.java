@@ -5,7 +5,8 @@ import android.content.Intent;
 import android.view.View;
 import android.widget.AdapterView;
 
-import com.daily.play.models.Song;
+import com.daily.play.api.models.Track;
+
 
 /**
  * Created by Jordan on 10/31/2014.
@@ -19,7 +20,7 @@ public class SongListOnItemClickListener implements AdapterView.OnItemClickListe
 
     @Override
     public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-        Song song = (Song) parent.getItemAtPosition(position);
+        Track song = (Track) parent.getItemAtPosition(position);
         if (song == null) {
             return;
         }

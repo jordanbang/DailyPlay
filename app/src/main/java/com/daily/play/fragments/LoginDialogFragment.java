@@ -1,93 +1,54 @@
 package com.daily.play.fragments;
 
-import android.app.AlertDialog;
-import android.app.Dialog;
+import android.app.Activity;
 import android.app.DialogFragment;
-import android.content.DialogInterface;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.Button;
-import android.widget.EditText;
 
 import com.daily.play.R;
-import com.daily.play.managers.LoginManager;
-import com.daily.play.utils.StringUtils;
 
 /**
- * Created by jordanbangia on 10/28/14.
+ * Created by Jordan on 7/6/2015.
  */
 public class LoginDialogFragment extends DialogFragment {
-    private EditText mPasswordEditText;
-    private EditText mUserEditText;
+    OnContinueSelectedListener mListener;
 
-    private static class BundleArgs {
-        static final String TRY_AGAIN = "tryagain";
-    }
-
-    public static LoginDialogFragment newInstance(boolean isTryAgain) {
+    public static LoginDialogFragment newInstance() {
         LoginDialogFragment fragment = new LoginDialogFragment();
-        Bundle args = new Bundle();
-        args.putBoolean(BundleArgs.TRY_AGAIN, isTryAgain);
-        fragment.setArguments(args);
         return fragment;
     }
 
     @Override
-    public Dialog onCreateDialog(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        boolean isTryAgain = getArguments().getBoolean(BundleArgs.TRY_AGAIN);
-
-        AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
-        String title = !isTryAgain ? "Login" : "Login Failed.  Try Again";
-        builder.setTitle(title);
-        LayoutInflater inflater = getActivity().getLayoutInflater();
-        View view = inflater.inflate(R.layout.login_dialog, null);
-        mUserEditText = (EditText) view.findViewById(R.id.login_email);
-        mPasswordEditText = (EditText) view.findViewById(R.id.login_password);
-
-        builder.setView(view);
-        builder.setPositiveButton("Login", new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialogInterface, int id) {
-
-            }
-        });
-
-        builder.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialogInterface, int i) {
-                dialogInterface.dismiss();
-            }
-        });
-
-        return builder.create();
+    public void onAttach(Activity activity) {
+        super.onAttach(activity);
+        try {
+            mListener = (OnContinueSelectedListener) activity;
+        } catch (ClassCastException e) {
+            e.printStackTrace();
+        }
     }
 
     @Override
-    public void onStart() {
-        super.onStart();
+    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+        View view = inflater.inflate(R.layout.login_dialog, container);
 
-        AlertDialog dialog = (AlertDialog) getDialog();
-        if (dialog != null) {
-            Button positiveButton = dialog.getButton(Dialog.BUTTON_POSITIVE);
-            positiveButton.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    String username = mUserEditText.getText().toString();
-                    String password = mPasswordEditText.getText().toString();
+        Button continueButton = (Button) view.findViewById(R.id.continue_button);
+        continueButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                dismiss();
+                mListener.onContinueSelected();
+            }
+        });
 
-                    if (StringUtils.isEmptyString(username) || !StringUtils.isValidEmail(username)) {
-                        mUserEditText.setError("Please enter valid email address.");
-                    } else if (StringUtils.isEmptyString(password)) {
-                        mPasswordEditText.setError("Please enter your password.");
-                    } else {
-                        getActivity().findViewById(R.id.progressBar).setVisibility(View.VISIBLE);
-                        dismiss();
-                        LoginManager.getManager(getActivity()).login(username, password);
-                    }
-                }
-            });
-        }
+        getDialog().setTitle("Login");
+        return view;
+    }
+
+    public interface OnContinueSelectedListener {
+        public void onContinueSelected();
     }
 }

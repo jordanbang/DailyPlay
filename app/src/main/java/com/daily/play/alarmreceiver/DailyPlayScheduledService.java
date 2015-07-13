@@ -9,7 +9,6 @@ import android.support.v4.app.NotificationCompat;
 import android.support.v4.app.TaskStackBuilder;
 import android.util.Log;
 
-import com.daily.play.GooglePlayMusicApi.impl.InvalidCredentialsException;
 import com.daily.play.R;
 import com.daily.play.activities.MainActivity;
 import com.daily.play.exceptions.NoSpaceException;
@@ -43,19 +42,15 @@ public class DailyPlayScheduledService extends IntentService{
             dailyPlayMusicManager.getDailyPlayMusic(getApplicationContext());
             sendNotification("DailyPlay list downloaded!", "Your songs were successfully downloaded.  Enjoy your new DailyPlay list!");
         } catch(NoWifiException e) {
-            Log.e("DailyPlay - error in scheduled service", e.toString());
+            Log.e("DailyPlay", e.toString());
             e.printStackTrace();
             sendNotification("Something went wrong.", "Your device was not connected to Wifi. We were unable to download a new DailyPlay list.");
         } catch(NoSpaceException e) {
-            Log.e("DailyPlay - error in scheduled service", e.toString());
+            Log.e("DailyPlay", e.toString());
             e.printStackTrace();
             sendNotification("Something went wrong.", "There was not enough space to download a new DailyPlay list.  Try freeing up some space and downloading again.");
-        } catch (InvalidCredentialsException e) {
-            Log.e("DailyPlay", "Error in scheduled service " + e.toString());
-            e.printStackTrace();
-            sendNotification("Something went wrong.", "There was a problem with you credentials and your DailyPlay list could not be downloaded.  Please login again.");
         } catch (Exception e) {
-            Log.e("DailyPlay - error in scheduled service", e.toString());
+            Log.e("DailyPlay", e.toString());
             e.printStackTrace();
             LogUtils.appendLog(e);
             sendNotification("Something went wrong.", "An error occurred while trying to download your DailyPlay list.");
@@ -63,7 +58,7 @@ public class DailyPlayScheduledService extends IntentService{
 
         Date date = new Date(System.currentTimeMillis());
         DateFormat format = new SimpleDateFormat("HH:mm:ss");
-        Log.i("DailyPlay - list downloaded @", format.format(date));
+        Log.i("DailyPlay - downloaded@", format.format(date));
         DailyPlayAlarmReceiver.completeWakefulIntent(intent);
     }
 

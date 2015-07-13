@@ -9,16 +9,16 @@ import android.provider.MediaStore;
 import android.text.format.DateUtils;
 import android.util.Log;
 
-import com.google.gson.Gson;
-import com.google.gson.reflect.TypeToken;
-import com.daily.play.GooglePlayMusicApi.impl.GoogleMusicAPI;
-import com.daily.play.GooglePlayMusicApi.model.Song;
+import com.daily.play.api.DailyPlayMusicApi;
+import com.daily.play.api.MusicApi;
+import com.daily.play.api.models.Track;
 import com.daily.play.exceptions.NoSpaceException;
 import com.daily.play.exceptions.NoWifiException;
-import com.daily.play.models.SongFile;
 import com.daily.play.utils.ConnectionUtils;
 import com.daily.play.utils.DailyPlaySharedPrefUtils;
 import com.daily.play.utils.StringUtils;
+import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
 
 import java.io.File;
 import java.io.IOException;
@@ -43,9 +43,9 @@ public class DailyPlayMusicManager {
     private static final long TEN_MEGABYTES = 10*MEGABYTE;
 
     private static DailyPlayMusicManager mInstance;
-    private final GoogleMusicAPI mApi;
-    private ArrayList<Song> mSongList;
-    private ArrayList<SongFile> mDownloadedFiles;
+    private MusicApi mApi;
+    private ArrayList<Track> mSongList;
+    private ArrayList<Track> mDownloadedFiles;
 
     private int mSongCount = 0;
 
@@ -62,7 +62,7 @@ public class DailyPlayMusicManager {
     }
 
     private DailyPlayMusicManager() {
-        mApi = new GoogleMusicAPI();
+        mApi = new DailyPlayMusicApi();
     }
 
     public void getDailyPlayMusic(Context context) throws Exception {
@@ -71,7 +71,7 @@ public class DailyPlayMusicManager {
         }
 
         loadSongList();
-        Collection<Song> downloadList = getSongList();
+        Collection<Track> downloadList = getSongList();
 
         if (!isFreeSpace(downloadList.size())) {
             throw(new NoSpaceException());
@@ -80,7 +80,7 @@ public class DailyPlayMusicManager {
         getDownloadedSongs();
         deleteOldDailyPlayList(context);
         Log.i("DailyPlay", "Starting to download songs");
-        Collection<SongFile> songs = mApi.downloadSongs(downloadList, context);
+        Collection<Track> songs = mApi.downloadSongs(downloadList, context);
         mDownloadedFiles.addAll(songs);
         Log.i("DailyPlay", "Songs downloaded");
         saveDailyPlayList();
@@ -88,12 +88,12 @@ public class DailyPlayMusicManager {
         Log.i("DailPlay", "Done downloading list");
     }
 
-    private ArrayList<Song> getSongListForCount(int numberOfSongs) {
+    private ArrayList<Track> getSongListForCount(int numberOfSongs) {
         if (numberOfSongs >= mSongList.size()) {
             return mSongList;
         }
 
-        ArrayList<Song> songs = new ArrayList<Song>();
+        ArrayList<Track> songs = new ArrayList<Track>();
         for (int i = 0; i < numberOfSongs; i++) {
             Random rand = new Random();
             int nextSongIndex = rand.nextInt(mSongCount);
@@ -105,11 +105,11 @@ public class DailyPlayMusicManager {
         return songs;
     }
 
-    private Collection<Song> getSongListForTime(int timeOfPlayListMin) {
-        ArrayList<Song> songsToDownload = new ArrayList<Song>();
+    private Collection<Track> getSongListForTime(int timeOfPlayListMin) {
+        ArrayList<Track> songsToDownload = new ArrayList<Track>();
         while (timeOfPlayListMin > 0 && songsToDownload.size() != mSongList.size()) {
             Random rand = new Random();
-            Song songToBeAdded = mSongList.get(rand.nextInt(mSongCount));
+            Track songToBeAdded = mSongList.get(rand.nextInt(mSongCount));
             while (songsToDownload.contains(songToBeAdded)) {
                 songToBeAdded = mSongList.get(rand.nextInt(mSongCount));
             }
@@ -124,9 +124,9 @@ public class DailyPlayMusicManager {
      * @param downloadFiles The files to be scanned.
      * @param context Context is necessary to get the media scanner.
      */
-    private void scanMediaFiles(final Collection<SongFile> downloadFiles, Context context) {
+    private void scanMediaFiles(final Collection<Track> downloadFiles, Context context) {
         ArrayList<String> pathsToAdd = new ArrayList<String>(downloadFiles.size());
-        for (SongFile songFile : downloadFiles) {
+        for (Track songFile : downloadFiles) {
             File file = songFile.getFile();
             if (file != null) {
                 pathsToAdd.add(file.getAbsolutePath());
@@ -138,10 +138,9 @@ public class DailyPlayMusicManager {
         MediaScannerConnection.scanFile(context, pathsToAddStringArray, null, new MediaScannerConnection.OnScanCompletedListener() {
             @Override
             public void onScanCompleted(String path, Uri uri) {
-                Log.i("DailyPlay - Scanned file added", path);
+                Log.i("DailyPlay", "Scanned file added: " + path);
             }
         });
-
     }
 
     /**
@@ -165,12 +164,12 @@ public class DailyPlayMusicManager {
             }
         }
 
-        for(SongFile downloadedFile : mDownloadedFiles) {
+        for(Track downloadedFile : mDownloadedFiles) {
             File file = downloadedFile.getFile();
             if (file.delete()) {
-                Log.i("DailyPlay - Deleted file",  file.getName());
+                Log.i("DailyPlay",  "Deleted File: " + file.getName());
             } else {
-                Log.i("DailyPlay - File not deleted",  file.getName());
+                Log.i("DailyPlay", "File not deleted: " + file.getName());
             };
             ContentResolver resolver = context.getContentResolver();
             resolver.delete(MediaStore.Audio.Media.EXTERNAL_CONTENT_URI, MediaStore.Audio.Media.DATA + "=?", new String[]{file.getAbsolutePath()});
@@ -179,29 +178,16 @@ public class DailyPlayMusicManager {
         DailyPlaySharedPrefUtils.setDownloadedSongList("");
     }
 
-    public Collection<SongFile> getDownloadedSongs() {
+    public Collection<Track> getDownloadedSongs() {
         if (mDownloadedFiles == null) {
             loadCurrentlyDownloadedList();
         }
         return mDownloadedFiles;
     }
 
-    public ArrayList<com.daily.play.models.Song> getDownloadedSongsAsSongs() {
-        getDownloadedSongs();
-        ArrayList<com.daily.play.models.Song> songs = new ArrayList<com.daily.play.models.Song>();
-        if (mDownloadedFiles != null) {
-            for (SongFile songFile : mDownloadedFiles) {
-                com.daily.play.models.Song song = new com.daily.play.models.Song(songFile.getSong().getTitle(),
-                        songFile.getSong().getArtist(), songFile.getSong().getAlbum(), songFile.getUri());
-                songs.add(song);
-            }
-        }
-        return songs;
-    }
-
-    private Collection<Song> getSongList() {
+    private Collection<Track> getSongList() {
         int downloadOption = DailyPlaySharedPrefUtils.getDownloadOption();
-        Collection<Song> songs = null;
+        Collection<Track> songs = null;
         int playListLength = DailyPlaySharedPrefUtils.getLengthOfPlayList();
         switch(downloadOption) {
             case DownloadOptions.SONGS:
@@ -232,11 +218,11 @@ public class DailyPlayMusicManager {
     private void loadCurrentlyDownloadedList() {
         String oldDailyPlayList = DailyPlaySharedPrefUtils.getDownloadedSongList();
         if (StringUtils.isEmptyString(oldDailyPlayList)) {
-            mDownloadedFiles = new ArrayList<SongFile>();
+            mDownloadedFiles = new ArrayList<Track>();
             return;
         }
         Gson gson = new Gson();
-        Type type = new TypeToken<Collection<SongFile>>() {}.getType();
+        Type type = new TypeToken<Collection<Track>>() {}.getType();
         mDownloadedFiles = gson.fromJson(oldDailyPlayList, type);
     }
 
@@ -248,14 +234,16 @@ public class DailyPlayMusicManager {
         DailyPlaySharedPrefUtils.setSongList(gson.toJson(mSongList));
     }
 
-    public void login() throws Exception {
-        String username = DailyPlaySharedPrefUtils.getUsername();
-        String password = DailyPlaySharedPrefUtils.getPassword();
-        login(username, password);
+    public void login() {
+        mApi.login();
     }
 
-    public void login(String username, String password) throws Exception {
-        mApi.login(username, password);
+    public void login(String token) {
+        mApi.login(token);
+    }
+
+    public void logout() {
+        mApi.logout();
     }
 
     private void loadSongListFromSharedPref() throws IOException, URISyntaxException {
@@ -264,7 +252,7 @@ public class DailyPlayMusicManager {
             downloadSongList();
         } else {
             Gson gson = new Gson();
-            Type type = new TypeToken<Collection<Song>>(){}.getType();
+            Type type = new TypeToken<Collection<Track>>(){}.getType();
             mSongList = gson.fromJson(songListAsString, type);
             mSongCount = mSongList.size();
         }
@@ -290,22 +278,5 @@ public class DailyPlayMusicManager {
 
         Gson gson = new Gson();
         DailyPlaySharedPrefUtils.setDownloadedSongList(gson.toJson(mDownloadedFiles));
-    }
-
-    //TODO: Remove this test function
-    public void test(Context context) {
-        try {
-            getDailyPlayMusic(context);
-        } catch (IOException e) {
-            e.printStackTrace();
-        } catch (URISyntaxException e) {
-            e.printStackTrace();
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-//        Collection<Song> songs = getSongList();
-//        for (Song song : songs) {
-//            Log.i("DailyPlay", "Test - getSongList - song: " + song.getName() + " - " + song.getArtist());
-//        }
     }
 }

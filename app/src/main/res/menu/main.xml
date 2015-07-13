@@ -16,4 +16,7 @@
           android:title="Info"
           android:orderInCategory="300"
           app:showAsAction="always"/>
+    <item android:id="@+id/action_test"
+          android:title="Test"
+          app:showAsAction="always"/>
 </menu>

@@ -1,11 +1,14 @@
 package com.daily.play.activities;
 
+import android.accounts.AccountManager;
 import android.app.Activity;
+import android.app.Dialog;
 import android.app.FragmentManager;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.NotificationCompat;
 import android.support.v4.app.TaskStackBuilder;
@@ -18,22 +21,35 @@ import android.widget.TextView;
 import com.daily.play.R;
 import com.daily.play.adapters.SongListAdapter;
 import com.daily.play.alarmreceiver.DailyPlayAlarmReceiver;
+import com.daily.play.api.models.Track;
 import com.daily.play.fragments.InformationDialogFragment;
+import com.daily.play.fragments.LoginDialogFragment;
 import com.daily.play.listeners.GetDownloadedSongListListener;
 import com.daily.play.listeners.SongListOnItemClickListener;
 import com.daily.play.managers.DailyPlayMusicManager;
-import com.daily.play.managers.LoginManager;
-import com.daily.play.models.Song;
 import com.daily.play.tasks.GetDownloadedSongListTask;
 import com.daily.play.utils.DailyPlaySharedPrefUtils;
 import com.daily.play.utils.LogUtils;
+import com.daily.play.utils.LoginUtils;
+import com.google.android.gms.auth.GoogleAuthException;
+import com.google.android.gms.auth.GoogleAuthUtil;
+import com.google.android.gms.auth.GooglePlayServicesAvailabilityException;
+import com.google.android.gms.auth.UserRecoverableAuthException;
+import com.google.android.gms.common.AccountPicker;
+import com.google.android.gms.common.GooglePlayServicesUtil;
 
+import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collection;
 
 
-public class MainActivity extends Activity {
+public class MainActivity extends Activity implements
+        LoginDialogFragment.OnContinueSelectedListener, InformationDialogFragment.OnLoginClickListener {
     private ListView mListView;
     private DailyPlayAlarmReceiver mAlarm = new DailyPlayAlarmReceiver();
+
+    static final int REQUEST_CODE_PICK_ACCOUNT = 1000;
+    static final int REQUEST_CODE_RECOVER_FROM_PLAY_SERVICES_ERROR = 1001;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -53,8 +69,10 @@ public class MainActivity extends Activity {
             FragmentManager fm = this.getFragmentManager();
             InformationDialogFragment infoDialogFragment = InformationDialogFragment.newInstance(true);
             infoDialogFragment.show(fm, "info_dialog_fragment");
-        } else {
-            LoginManager.getManager(this).promptForUserInformationIfNoneExists();
+        } else if (LoginUtils.isLoggedIn()){
+            FragmentManager fm = this.getFragmentManager();
+            LoginDialogFragment loginDialogFragment = LoginDialogFragment.newInstance();
+            loginDialogFragment.show(fm, "login_dialog_fragment");
         }
     }
 
@@ -77,7 +95,7 @@ public class MainActivity extends Activity {
                 startActivity(intent);
                 return true;
             case R.id.action_logout:
-                LoginManager.getManager(this).logout();
+                DailyPlayMusicManager.getInstance().logout();
                 recreate();
                 return true;
             case R.id.action_info:
@@ -92,15 +110,15 @@ public class MainActivity extends Activity {
     private void updateListView() {
         GetDownloadedSongListListener listener = new GetDownloadedSongListListener() {
             @Override
-            public void onComplete(ArrayList<Song> songs) {
+            public void onComplete(Collection<Track> songs) {
                 SongListAdapter adapter;
                 if (mListView.getAdapter() == null) {
-                    adapter = new SongListAdapter(MainActivity.this, songs);
+                    adapter = new SongListAdapter(MainActivity.this, new ArrayList<>(songs));
                     mListView.setAdapter(adapter);
                 } else {
                     adapter = (SongListAdapter) mListView.getAdapter();
                 }
-                adapter.notifyDataSetChanged(songs);
+                adapter.notifyDataSetChanged(new ArrayList<>(songs));
                 if (adapter.isEmpty()) {
                     TextView emptyView = (TextView) findViewById(R.id.empty_list);
                     emptyView.setText(R.string.empty_list);
@@ -108,25 +126,6 @@ public class MainActivity extends Activity {
             }
         };
         new GetDownloadedSongListTask().execute(listener);
-    }
-
-    //TODO: Remove this function
-    private void test() {
-        Thread thread = new Thread(new Runnable() {
-            @Override
-            public void run() {
-                DailyPlayMusicManager dailyPlayMusicManager = DailyPlayMusicManager.getInstance();
-                try {
-                    dailyPlayMusicManager.login();
-                    dailyPlayMusicManager.test(MainActivity.this);
-                } catch (Exception e) {
-                    Log.e("DailyPlay - test error", e.toString());
-                    LogUtils.appendLog(e);
-                }
-            }
-        });
-        thread.start();
-//        sendNotification("Hi", "Testing");
     }
 
     private void sendNotification(String title, String message) {
@@ -151,6 +150,72 @@ public class MainActivity extends Activity {
         NotificationManager notificationManager = (NotificationManager) this.getSystemService(Context.NOTIFICATION_SERVICE);
         notificationManager.notify(1, builder.build());
     }
+
+    private void startLoginFlow() {
+        String[] accountTypes = new String[]{"com.google"};
+        Intent intent = AccountPicker.newChooseAccountIntent(null, null, accountTypes, false, null, null, null, null);
+        startActivityForResult(intent, REQUEST_CODE_PICK_ACCOUNT);
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        if (requestCode == REQUEST_CODE_PICK_ACCOUNT){
+            if (resultCode == RESULT_OK) {
+                Log.i("DailyPlay", "getting token");
+                final String email = data.getStringExtra(AccountManager.KEY_ACCOUNT_NAME);
+                new AsyncTask<Void, Void, String>() {
+                    @Override
+                    protected String doInBackground(Void... params) {
+                        String token = "";
+                        try {
+                            token = GoogleAuthUtil.getToken(MainActivity.this, email, "sj");
+                            Log.i("DailyPlay", "Got the token");
+                            DailyPlayMusicManager.getInstance().login(token);
+                        } catch (UserRecoverableAuthException e) {
+                            e.printStackTrace();
+                            MainActivity.this.handleException(e);
+                        } catch (GoogleAuthException e) {
+                            e.printStackTrace();
+                            MainActivity.this.handleException(e);
+                        } catch (IOException e) {
+                            MainActivity.this.handleException(e);
+                            e.printStackTrace();
+                        }
+                        return token;
+                    }
+                }.execute();
+            }
+        }
+        super.onActivityResult(requestCode, resultCode, data);
+    }
+
+    private void handleException(final Exception e) {
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                if (e instanceof GooglePlayServicesAvailabilityException) {
+                    int statusCode = ((GooglePlayServicesAvailabilityException) e).getConnectionStatusCode();
+                    Dialog dialog = GooglePlayServicesUtil.getErrorDialog(statusCode, MainActivity.this, REQUEST_CODE_RECOVER_FROM_PLAY_SERVICES_ERROR);
+                    dialog.show();
+                } else if (e instanceof UserRecoverableAuthException) {
+                    Intent intent = ((UserRecoverableAuthException) e).getIntent();
+                    startActivityForResult(intent, REQUEST_CODE_RECOVER_FROM_PLAY_SERVICES_ERROR);
+                }
+            }
+        });
+    }
+
+    @Override
+    public void onContinueSelected() {
+        startLoginFlow();
+    }
+
+    @Override
+    public void onLoginClick() {
+        startLoginFlow();
+    }
 }
+
+
 
 

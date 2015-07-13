@@ -28,4 +28,5 @@ dependencies {
     compile files('libs/httpcore-4.3.2.jar')
     compile files('libs/gson-2.2.4.jar')
     compile files('libs/mp3agic-0.8.3-SNAPSHOT.jar')
+    compile files('libs/volley_20140702.jar')
 }

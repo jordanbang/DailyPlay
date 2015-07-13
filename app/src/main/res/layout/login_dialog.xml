@@ -11,22 +11,12 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:textAppearance="?android:attr/textAppearanceMedium"
-        android:text="Login to your Google Account with Google Play Music to get started."
+        android:text="Login to your Google Account that is attached to Google Play Music.  You may be asked to accept the permission for SJ (Skyjam).  This is name of the API being used to query for you songs."
         android:id="@+id/textView"/>
 
-    <EditText
+    <Button
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:inputType="textEmailAddress"
-        android:ems="10"
-        android:id="@+id/login_email"
-        android:hint="Email"/>
-
-    <EditText
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:inputType="textPassword"
-        android:ems="10"
-        android:id="@+id/login_password"
-        android:hint="Password"/>
+        android:text="Continue"
+        android:id="@+id/continue_button"/>
 </LinearLayout>
